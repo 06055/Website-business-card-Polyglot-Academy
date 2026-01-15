@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title data-i18n="terms_title">Terms of Service — Polyglot Academy</title>
+
+  <link rel="stylesheet" href="/static/polyglot_academy_style.css">
+  <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/css/flag-icons.min.css" rel="stylesheet" />
+</head>
+
+<body class="legal">
+
+  <div class="legal__top">
+    <a href="/" class="legal__back" data-i18n="back_btn">← Back to website</a>
+
+    <div class="langdd langdd--legal" id="langDropdown">
+      <button class="legal__back langdd__btn" type="button" id="langBtn" aria-label="Choose language">
+        <span class="fi fi-us fis" id="langFlag" aria-hidden="true"></span>
+        <span class="langdd__label" id="langLabel">EN</span>
+        <span class="langdd__caret" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="langdd__menu" id="langMenu" role="menu" aria-label="Language">
+        <button class="langdd__item" type="button" data-lang="en" role="menuitem">
+          <span class="fi fi-us fis" aria-hidden="true"></span><span>English</span>
+        </button>
+        <button class="langdd__item" type="button" data-lang="uk" role="menuitem">
+          <span class="fi fi-ua fis" aria-hidden="true"></span><span>Українська</span>
+        </button>
+        <button class="langdd__item" type="button" data-lang="ru" role="menuitem">
+          <span class="fi fi-ru fis" aria-hidden="true"></span><span>Русский</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="legal__box">
+    <h1 data-i18n="terms_h1">Terms of Service</h1>
+
+    <p data-i18n="terms_intro">
+      By using the Polyglot Academy website, you agree to these terms.
+    </p>
+
+    <h2 data-i18n="terms_1_h2">1. Project format</h2>
+    <ul>
+      <li data-i18n="terms_1_li1">learning materials</li>
+      <li data-i18n="terms_1_li2">access to Telegram channel</li>
+      <li data-i18n="terms_1_li3">group lessons (optional)</li>
+    </ul>
+
+    <h2 data-i18n="terms_2_h2">2. Responsibility</h2>
+    <p data-i18n="terms_2_p">
+      Learning results depend on personal effort. The project does not guarantee a specific language level.
+    </p>
+
+    <h2 data-i18n="terms_3_h2">3. User rights</h2>
+    <ul>
+      <li data-i18n="terms_3_li1">stop using the service at any time</li>
+      <li data-i18n="terms_3_li2">receive support</li>
+    </ul>
+
+    <h2 data-i18n="terms_4_h2">4. Restrictions</h2>
+    <ul>
+      <li data-i18n="terms_4_li1">copying materials is prohibited</li>
+      <li data-i18n="terms_4_li2">distribution without permission is prohibited</li>
+    </ul>
+
+    <h2 data-i18n="terms_5_h2">5. Changes</h2>
+    <p data-i18n="terms_5_p">
+      The administration may change these terms without prior notice.
+    </p>
+
+    <h2 data-i18n="terms_6_h2">6. Contacts</h2>
+    <p data-i18n-html="terms_6_html">
+      Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>
+      Email: hello@example.com
+    </p>
+
+    <div class="legal__date" data-i18n="terms_date">Last updated: 2026</div>
+  </div>
+
+
+  <script>
+    const i18n = {
+      en: {
+        terms_title: "Terms of Service — Polyglot Academy",
+        back_btn: "← Back to website",
+
+        terms_h1: "Terms of Service",
+        terms_intro: "By using the Polyglot Academy website, you agree to these terms.",
+
+        terms_1_h2: "1. Project format",
+        terms_1_li1: "learning materials",
+        terms_1_li2: "access to Telegram channel",
+        terms_1_li3: "group lessons (optional)",
+
+        terms_2_h2: "2. Responsibility",
+        terms_2_p: "Learning results depend on personal effort. The project does not guarantee a specific language level.",
+
+        terms_3_h2: "3. User rights",
+        terms_3_li1: "stop using the service at any time",
+        terms_3_li2: "receive support",
+
+        terms_4_h2: "4. Restrictions",
+        terms_4_li1: "copying materials is prohibited",
+        terms_4_li2: "distribution without permission is prohibited",
+
+        terms_5_h2: "5. Changes",
+        terms_5_p: "The administration may change these terms without prior notice.",
+
+        terms_6_h2: "6. Contacts",
+        terms_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        terms_date: "Last updated: 2026",
+      },
+
+      uk: {
+        terms_title: "Користувацька угода — Polyglot Academy",
+        back_btn: "← Повернутися на сайт",
+
+        terms_h1: "Користувацька угода",
+        terms_intro: "Користуючись сайтом Polyglot Academy, ви погоджуєтесь з умовами цієї угоди.",
+
+        terms_1_h2: "1. Формат проєкту",
+        terms_1_li1: "навчальні матеріали",
+        terms_1_li2: "доступ до Telegram-каналу",
+        terms_1_li3: "групові заняття (за бажанням)",
+
+        terms_2_h2: "2. Відповідальність",
+        terms_2_p: "Результати навчання залежать від особистих зусиль користувача. Проєкт не гарантує конкретний рівень володіння мовою.",
+
+        terms_3_h2: "3. Права користувача",
+        terms_3_li1: "припинити користування сервісом у будь-який момент",
+        terms_3_li2: "отримувати підтримку",
+
+        terms_4_h2: "4. Обмеження",
+        terms_4_li1: "заборонено копіювання матеріалів",
+        terms_4_li2: "заборонено поширення контенту без дозволу",
+
+        terms_5_h2: "5. Зміна умов",
+        terms_5_p: "Адміністрація має право змінювати умови без попереднього повідомлення.",
+
+        terms_6_h2: "6. Контакти",
+        terms_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        terms_date: "Дата оновлення: 2026",
+      },
+
+      ru: {
+        terms_title: "Пользовательское соглашение — Polyglot Academy",
+        back_btn: "← Вернуться на сайт",
+
+        terms_h1: "Пользовательское соглашение",
+        terms_intro: "Используя сайт Polyglot Academy, вы соглашаетесь с условиями данного соглашения.",
+
+        terms_1_h2: "1. Формат проекта",
+        terms_1_li1: "обучающие материалы",
+        terms_1_li2: "доступ к Telegram-каналу",
+        terms_1_li3: "групповые занятия (по желанию)",
+
+        terms_2_h2: "2. Ответственность",
+        terms_2_p: "Результаты обучения зависят от личных усилий пользователя. Проект не гарантирует конкретный уровень владения языком.",
+
+        terms_3_h2: "3. Права пользователя",
+        terms_3_li1: "прекратить использование сервиса в любой момент",
+        terms_3_li2: "получать поддержку",
+
+        terms_4_h2: "4. Ограничения",
+        terms_4_li1: "запрещено копирование материалов",
+        terms_4_li2: "запрещено распространение контента без разрешения",
+
+        terms_5_h2: "5. Изменение условий",
+        terms_5_p: "Администрация имеет право изменять условия без предварительного уведомления.",
+
+        terms_6_h2: "6. Контакты",
+        terms_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        terms_date: "Дата обновления: 2026",
+      }
+    };
+
+    const langMeta = {
+      en: { label: "EN", flag: "fi-us" },
+      uk: { label: "UA", flag: "fi-ua" },
+      ru: { label: "RU", flag: "fi-ru" }
+    };
+
+    function applyLang(lang) {
+      const dict = i18n[lang] || i18n.en;
+      document.documentElement.lang = lang;
+
+      const titleEl = document.querySelector("title");
+      if (titleEl && dict.terms_title) titleEl.textContent = dict.terms_title;
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key] !== undefined) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll("[data-i18n-html]").forEach(el => {
+        const key = el.getAttribute("data-i18n-html");
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+
+      const meta = langMeta[lang] || langMeta.en;
+      const flagEl = document.getElementById("langFlag");
+      const labelEl = document.getElementById("langLabel");
+      if (flagEl) flagEl.className = `fi ${meta.flag} fis`;
+      if (labelEl) labelEl.textContent = meta.label;
+
+      localStorage.setItem("lang", lang);
+    }
+
+    const langDropdown = document.getElementById("langDropdown");
+    const langBtn = document.getElementById("langBtn");
+
+    langBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      langDropdown?.classList.toggle("is-open");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!langDropdown) return;
+      if (langDropdown.contains(e.target)) return;
+      langDropdown.classList.remove("is-open");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") langDropdown?.classList.remove("is-open");
+    });
+
+    document.addEventListener("click", (e) => {
+      const item = e.target.closest("[data-lang]");
+      if (!item) return;
+      applyLang(item.getAttribute("data-lang"));
+      langDropdown?.classList.remove("is-open");
+    });
+
+    applyLang(localStorage.getItem("lang") || "en");
+  </script>
+
+</body>
+</html>

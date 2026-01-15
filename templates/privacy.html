@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title data-i18n="privacy_title">Privacy Policy — Polyglot Academy</title>
+
+  <link rel="stylesheet" href="/static/polyglot_academy_style.css">
+  <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/css/flag-icons.min.css" rel="stylesheet" />
+</head>
+
+<body class="legal">
+
+  <div class="legal__top">
+
+    <a href="/" class="legal__back" data-i18n="back_btn">← Back to website</a>
+
+    <div class="langdd langdd--legal" id="langDropdown">
+      <button class="legal__back langdd__btn" type="button" id="langBtn" aria-label="Choose language">
+        <span class="fi fi-us fis" id="langFlag" aria-hidden="true"></span>
+        <span class="langdd__label" id="langLabel">EN</span>
+        <span class="langdd__caret" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="langdd__menu" id="langMenu" role="menu" aria-label="Language">
+        <button class="langdd__item" type="button" data-lang="en" role="menuitem">
+          <span class="fi fi-us fis" aria-hidden="true"></span><span>English</span>
+        </button>
+        <button class="langdd__item" type="button" data-lang="uk" role="menuitem">
+          <span class="fi fi-ua fis" aria-hidden="true"></span><span>Українська</span>
+        </button>
+        <button class="langdd__item" type="button" data-lang="ru" role="menuitem">
+          <span class="fi fi-ru fis" aria-hidden="true"></span><span>Русский</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="legal__box">
+    <h1 data-i18n="privacy_h1">Privacy Policy</h1>
+
+    <p data-i18n="privacy_intro">
+      Polyglot Academy respects your privacy and is committed to protecting your personal data.
+    </p>
+
+    <h2 data-i18n="privacy_1_h2">1. What data we collect</h2>
+    <ul>
+      <li data-i18n="privacy_1_li1">Name or nickname</li>
+      <li data-i18n="privacy_1_li2">Contact details (Telegram, email)</li>
+    </ul>
+
+    <h2 data-i18n="privacy_2_h2">2. How we use your data</h2>
+    <p data-i18n="privacy_2_p">Your data is used only for:</p>
+    <ul>
+      <li data-i18n="privacy_2_li1">communication</li>
+      <li data-i18n="privacy_2_li2">organizing learning process</li>
+      <li data-i18n="privacy_2_li3">answering your requests</li>
+    </ul>
+
+    <h2 data-i18n="privacy_3_h2">3. Data sharing</h2>
+    <p data-i18n="privacy_3_p">
+      We do not share your personal data with third parties and do not use it for advertising purposes.
+    </p>
+
+    <h2 data-i18n="privacy_4_h2">4. Data storage</h2>
+    <p data-i18n="privacy_4_p">
+      All information is stored securely and used only within the project.
+    </p>
+
+    <h2 data-i18n="privacy_5_h2">5. Cookies</h2>
+    <p data-i18n="privacy_5_p">
+      The website may use technical cookies to ensure proper functionality.
+    </p>
+
+    <h2 data-i18n="privacy_6_h2">6. Contacts</h2>
+    <p data-i18n-html="privacy_6_html">
+      Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>
+      Email: hello@example.com
+    </p>
+
+    <div class="legal__date" data-i18n="privacy_date">Last updated: 2026</div>
+  </div>
+
+
+  <script>
+    // ===== i18n dictionaries =====
+    const i18n = {
+      en: {
+        privacy_title: "Privacy Policy — Polyglot Academy",
+        back_btn: "← Back to website",
+
+        privacy_h1: "Privacy Policy",
+        privacy_intro: "Polyglot Academy respects your privacy and is committed to protecting your personal data.",
+
+        privacy_1_h2: "1. What data we collect",
+        privacy_1_li1: "Name or nickname",
+        privacy_1_li2: "Contact details (Telegram, email)",
+
+        privacy_2_h2: "2. How we use your data",
+        privacy_2_p: "Your data is used only for:",
+        privacy_2_li1: "communication",
+        privacy_2_li2: "organizing learning process",
+        privacy_2_li3: "answering your requests",
+
+        privacy_3_h2: "3. Data sharing",
+        privacy_3_p: "We do not share your personal data with third parties and do not use it for advertising purposes.",
+
+        privacy_4_h2: "4. Data storage",
+        privacy_4_p: "All information is stored securely and used only within the project.",
+
+        privacy_5_h2: "5. Cookies",
+        privacy_5_p: "The website may use technical cookies to ensure proper functionality.",
+
+        privacy_6_h2: "6. Contacts",
+        privacy_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        privacy_date: "Last updated: 2026",
+      },
+
+      uk: {
+        privacy_title: "Політика конфіденційності — Polyglot Academy",
+        back_btn: "← Повернутися на сайт",
+
+        privacy_h1: "Політика конфіденційності",
+        privacy_intro: "Проєкт Polyglot Academy поважає вашу конфіденційність та відповідально ставиться до захисту персональних даних.",
+
+        privacy_1_h2: "1. Які дані ми збираємо",
+        privacy_1_li1: "Ім’я або нікнейм",
+        privacy_1_li2: "Контактні дані (Telegram, email)",
+
+        privacy_2_h2: "2. Як використовуються дані",
+        privacy_2_p: "Ваші дані використовуються виключно для:",
+        privacy_2_li1: "зворотного зв’язку",
+        privacy_2_li2: "організації навчання",
+        privacy_2_li3: "відповідей на запити",
+
+        privacy_3_h2: "3. Передача даних",
+        privacy_3_p: "Ми не передаємо персональні дані третім особам та не використовуємо їх у рекламних цілях.",
+
+        privacy_4_h2: "4. Зберігання",
+        privacy_4_p: "Інформація зберігається у захищеному вигляді та використовується лише в межах проєкту.",
+
+        privacy_5_h2: "5. Cookies",
+        privacy_5_p: "Сайт може використовувати технічні cookies для коректної роботи сервісу.",
+
+        privacy_6_h2: "6. Контакти",
+        privacy_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        privacy_date: "Дата оновлення: 2026",
+      },
+
+      ru: {
+        privacy_title: "Политика конфиденциальности — Polyglot Academy",
+        back_btn: "← Вернуться на сайт",
+
+        privacy_h1: "Политика конфиденциальности",
+        privacy_intro: "Polyglot Academy уважает вашу конфиденциальность и ответственно относится к защите персональных данных пользователей.",
+
+        privacy_1_h2: "1. Какие данные мы собираем",
+        privacy_1_li1: "Имя или никнейм",
+        privacy_1_li2: "Контактные данные (Telegram, email)",
+
+        privacy_2_h2: "2. Как используются данные",
+        privacy_2_p: "Ваши данные используются только для:",
+        privacy_2_li1: "обратной связи",
+        privacy_2_li2: "организации обучения",
+        privacy_2_li3: "ответов на запросы",
+
+        privacy_3_h2: "3. Передача данных",
+        privacy_3_p: "Мы не передаём персональные данные третьим лицам и не используем их в рекламных целях.",
+
+        privacy_4_h2: "4. Хранение",
+        privacy_4_p: "Информация хранится в защищённом виде и используется исключительно в рамках проекта.",
+
+        privacy_5_h2: "5. Cookies",
+        privacy_5_p: "Сайт может использовать технические cookies для корректной работы сервиса.",
+
+        privacy_6_h2: "6. Контакты",
+        privacy_6_html: 'Telegram: <a href="https://t.me/your_channel">@your_channel</a><br>Email: hello@example.com',
+
+        privacy_date: "Дата обновления: 2026",
+      }
+    };
+
+    const langMeta = {
+      en: { label: "EN", flag: "fi-us" },
+      uk: { label: "UA", flag: "fi-ua" },
+      ru: { label: "RU", flag: "fi-ru" }
+    };
+
+    function applyLang(lang) {
+      const dict = i18n[lang] || i18n.en;
+
+      document.documentElement.lang = lang;
+
+      // title tag text
+      const titleEl = document.querySelector("title");
+      if (titleEl && dict.privacy_title) titleEl.textContent = dict.privacy_title;
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key] !== undefined) el.textContent = dict[key];
+      });
+
+      document.querySelectorAll("[data-i18n-html]").forEach(el => {
+        const key = el.getAttribute("data-i18n-html");
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+
+      const meta = langMeta[lang] || langMeta.en;
+      const flagEl = document.getElementById("langFlag");
+      const labelEl = document.getElementById("langLabel");
+      if (flagEl) flagEl.className = `fi ${meta.flag} fis`;
+      if (labelEl) labelEl.textContent = meta.label;
+
+      localStorage.setItem("lang", lang);
+    }
+
+    // ===== dropdown behavior =====
+    const langDropdown = document.getElementById("langDropdown");
+    const langBtn = document.getElementById("langBtn");
+
+    langBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      langDropdown?.classList.toggle("is-open");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!langDropdown) return;
+      if (langDropdown.contains(e.target)) return;
+      langDropdown.classList.remove("is-open");
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") langDropdown?.classList.remove("is-open");
+    });
+
+    document.addEventListener("click", (e) => {
+      const item = e.target.closest("[data-lang]");
+      if (!item) return;
+      applyLang(item.getAttribute("data-lang"));
+      langDropdown?.classList.remove("is-open");
+    });
+
+    // Default: use saved lang from site, else EN
+    applyLang(localStorage.getItem("lang") || "en");
+  </script>
+
+</body>
+</html>

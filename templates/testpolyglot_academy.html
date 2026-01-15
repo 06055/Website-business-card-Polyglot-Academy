@@ -1,0 +1,710 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Polyglot Academy</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='polyglot_academy_style.css') }}">
+
+    <link
+    href="https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/css/flag-icons.min.css"
+    rel="stylesheet"
+    />
+
+    <meta name="description" content="Short description: what you do and where you want people to go (Telegram)." />
+    </head>
+
+    <body>
+
+    <header class="header" id="header">
+    <div class="container">
+    <div class="header__inner">
+        <a class="brand" href="#top" aria-label="Home" data-i18n-attr="aria-label:brand_aria_home">
+        <div class="brand__mark">
+          <img src="static/images/polyglot_mark.png" class="brand__mark-img">
+        </div>
+
+        <div class="brand__name"><b>Polyglot Academy</b></div>
+        </a>
+
+        <nav aria-label="Navigation" data-i18n-attr="aria-label:nav_aria">
+        <a class="navlink" href="#about" data-i18n="nav_about">About</a>
+        <a class="navlink" href="#program" data-i18n="nav_program">Program</a>
+        <a class="navlink" href="#reviews" data-i18n="nav_reviews">Reviews</a>
+        <a class="navlink" href="#contacts" data-i18n="nav_contacts">Contacts</a>
+        </nav>
+
+        <div class="header__right">
+
+        <div class="langdd" id="langDropdown">
+            <button class="btn langdd__btn" type="button" id="langBtn" aria-label="Choose language">
+            <span class="fi fi-us fis" id="langFlag" aria-hidden="true"></span>
+            <span class="langdd__label" id="langLabel">EN</span>
+            <span class="langdd__caret" aria-hidden="true">▾</span>
+            </button>
+
+            <div class="langdd__menu" id="langMenu" role="menu" aria-label="Language">
+            <button class="langdd__item" type="button" data-lang="en" role="menuitem">
+                <span class="fi fi-us fis" aria-hidden="true"></span>
+                <span>English</span>
+            </button>
+            <button class="langdd__item" type="button" data-lang="uk" role="menuitem">
+                <span class="fi fi-ua fis" aria-hidden="true"></span>
+                <span>Українська</span>
+            </button>
+            <button class="langdd__item" type="button" data-lang="ru" role="menuitem">
+                <span class="fi fi-ru fis" aria-hidden="true"></span>
+                <span>Русский</span>
+            </button>
+            </div>
+        </div>
+
+        <a class="btn btn--accent" href="https://t.me/your_channel" target="_blank" rel="noopener" data-i18n="header_tg">
+            Go to Telegram
+        </a>
+
+        <button class="burger" id="burger" aria-label="Open menu" data-i18n-attr="aria-label:burger_open">☰</button>
+        </div>
+    </div>
+    </div>
+    </header>
+
+
+    <div class="mobile" id="mobile">
+    <div class="mobile__panel">
+    <div class="mobile__top">
+        <b data-i18n="mobile_menu_title">Menu</b>
+        <button class="btn" id="closeMobile" data-i18n="mobile_close">Close</button>
+    </div>
+
+    <div class="mobile__nav">
+        <a href="#about" data-i18n="nav_about">About</a>
+        <a href="#program" data-i18n="nav_program">Program</a>
+        <a href="#reviews" data-i18n="nav_reviews">Reviews</a>
+        <a href="#contacts" data-i18n="nav_contacts">Contacts</a>
+        <a class="btn btn--accent" href="https://t.me/your_channel" target="_blank" rel="noopener" data-i18n="header_tg">
+        Go to Telegram
+        </a>
+    </div>
+    </div>
+    </div>
+
+
+    <main id="top" class="hero">
+    <div class="container">
+    <div class="hero__inner">
+        <div class="kicker" data-i18n="hero_kicker">Languages • practice • results</div>
+
+        <h1 data-i18n="hero_h1">Learn a foreign language easily — without boredom</h1>
+
+        <p class="subtitle" data-i18n="hero_subtitle">
+        A teacher’s Telegram channel. Simple explanations, real practice, and useful materials
+        that help you actually start speaking.
+        </p>
+
+        <div class="hero__cta">
+        <a class="btn btn--accent" href="https://t.me/your_channel" target="_blank" rel="noopener" data-i18n="hero_btn_tg">
+            Subscribe on Telegram
+        </a>
+        <a class="btn" href="#about" data-i18n="hero_btn_more">Learn more</a>
+
+        </div>
+    </div>
+    </div>
+    </main>
+
+    <section id="about">
+    <div class="container">
+    <div class="section-title">
+        <h2 data-i18n="about_h2">About</h2>
+
+    </div>
+
+    <div class="grid">
+        <div class="card col-4">
+        <h3 data-i18n="about_card1_h3">Clear</h3>
+        <p data-i18n="about_card1_p">No fluff. People understand in 30 seconds what this is and why it matters.</p>
+        </div>
+        <div class="card col-4">
+        <h3 data-i18n="about_card2_h3">Practical</h3>
+        <p data-i18n="about_card2_p">Immediate value: checklists, tips, breakdowns — inside Telegram.</p>
+        </div>
+        <div class="card col-4">
+        <h3 data-i18n="about_card3_h3">Community</h3>
+        <p data-i18n="about_card3_p">News, Q&A, explanations, announcements, and feedback — in one place.</p>
+        </div>
+    </div>
+    </div>
+    </section>
+
+    <!-- ===== Program / Services ===== -->
+    <section id="program">
+    <div class="container">
+    <div class="section-title">
+        <h2 data-i18n="program_h2">What’s inside (program)</h2>
+
+    </div>
+
+    <div class="grid">
+        <div class="card col-6">
+        <h3 data-i18n="program_left_h3">Quick start</h3>
+        <ul class="list">
+            <li><span data-i18n="program_left_li1">Step #1 (what you’ll get)</span> <span class="badge" data-i18n="program_left_b1">1 day</span></li>
+            <li><span data-i18n="program_left_li2">Step #2</span> <span class="badge" data-i18n="program_left_b2">guide</span></li>
+            <li><span data-i18n="program_left_li3">Step #3</span> <span class="badge" data-i18n="program_left_b3">template</span></li>
+        </ul>
+        </div>
+
+        <div class="card col-6">
+        <h3 data-i18n="program_right_h3">Then</h3>
+        <ul class="list">
+            <li><span data-i18n="program_right_li1">Breakdowns / cases / examples</span> <span class="badge" data-i18n="program_right_b1">weekly</span></li>
+            <li><span data-i18n="program_right_li2">Answers to questions</span> <span class="badge" data-i18n="program_right_b2">in chat</span></li>
+            <li><span data-i18n="program_right_li3">Announcements / discounts / enrollments</span> <span class="badge" data-i18n="program_right_b3">first</span></li>
+        </ul>
+        </div>
+        <!-- ===== Services (cards) ===== -->
+        <div class="card col-6">
+          <h3 data-i18n="services_left_h3">Services</h3>
+          <ul class="list">
+            <li><span data-i18n="services_left_li1">Individual lessons</span></li>
+            <li><span data-i18n="services_left_li2">Exam preparation</span></li>
+          </ul>
+        </div>
+
+        <div class="card col-6">
+          <h3 data-i18n="services_right_h3">Also available</h3>
+          <ul class="list">
+            <li>
+              <span data-i18n="services_right_li1">Group lessons (3–7 people)</span>
+              <span class="badge" data-i18n="services_right_b1">60 min</span>
+            </li>
+            <li><span data-i18n="services_right_li2">Consultation</span></li>
+          </ul>
+        </div>
+
+
+
+        <div class="card col-12">
+        <h3 data-i18n="program_main_h3">Main action</h3>
+        <p data-i18n="program_main_p">Everything important is inside the Telegram channel. Click and get access.</p>
+        <div style="margin-top:12px; display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="btn btn--accent" href="https://t.me/your_channel" target="_blank" rel="noopener" data-i18n="program_main_btn_tg">
+            Go to Telegram
+            </a>
+
+        </div>
+        </div>
+    </div>
+    </div>
+    </section>
+
+    <section id="reviews">
+    <div class="container">
+    <div class="section-title">
+        <h2 data-i18n="reviews_h2">Reviews</h2>
+
+    </div>
+
+    <div class="grid">
+        <div class="card col-4">
+        <h3 data-i18n="reviews_card1_h3">Name Surname</h3>
+        <p data-i18n="reviews_card1_p">“Short review (1–2 sentences). What it was → what it became.”</p>
+        </div>
+        <div class="card col-4">
+        <h3 data-i18n="reviews_card2_h3">Name Surname</h3>
+        <p data-i18n="reviews_card2_p">“Loved the structure, support, and useful materials.”</p>
+        </div>
+        <div class="card col-4">
+        <h3 data-i18n="reviews_card3_h3">Name Surname</h3>
+        <p data-i18n="reviews_card3_p">“Now I know what to do next. Joined the channel — everything’s there.”</p>
+        </div>
+    </div>
+
+    <div style="margin-top:18px;">
+
+    </div>
+    </div>
+    </section>
+
+    <section id="contacts">
+    <div class="container">
+    <div class="section-title">
+        <h2 data-i18n="contacts_h2">Contacts</h2>
+
+    </div>
+
+    <div class="grid">
+        <div class="card col-6">
+        <h3 data-i18n="contacts_tg_h3">Telegram</h3>
+
+        <p data-i18n-html="contacts_tg_html">
+            Channel: <a href="https://t.me/your_channel" target="_blank" rel="noopener">@YOUR_CHANNEL</a><br/>
+            (insert your link)
+        </p>
+
+        <div style="margin-top:12px;">
+            <a class="btn btn--accent" href="https://t.me/your_channel" target="_blank" rel="noopener" data-i18n="contacts_tg_btn">
+            Go to Telegram
+            </a>
+        </div>
+        </div>
+
+        <div class="card col-6">
+        <h3 data-i18n="contacts_other_h3">Other contacts</h3>
+        <p data-i18n-html="contacts_other_html">
+
+            Email: <a href="mailto:hello@example.com">hello@example.com</a>
+        </p>
+        </div>
+    </div>
+    </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="footer__left">
+          <span>© <span id="year"></span> Polyglot Academy — онлайн-обучение языкам</span>
+        </div>
+
+        <div class="footer__links">
+          <a href="/privacy" data-i18n="footer_privacy">Политика конфиденциальности</a>
+          <span class="footer__dot">•</span>
+          <a href="/terms" data-i18n="footer_terms">Пользовательское соглашение</a>
+        </div>
+
+        <div class="footer__right">
+          <span data-i18n="footer_contacts_label">Контакты:</span>
+          <a href="https://t.me/your_channel" target="_blank" rel="noopener">@YOUR_CHANNEL</a>
+          <span class="footer__dot">•</span>
+          <a href="mailto:hello@example.com">hello@example.com</a>
+        </div>
+      </div>
+    </footer>
+
+<script>
+
+  const header = document.getElementById("header");
+  const setHeader = () => {
+    if (window.scrollY > 10) header.classList.add("is-solid");
+    else header.classList.remove("is-solid");
+  };
+  window.addEventListener("scroll", setHeader);
+  setHeader();
+
+  // ===== Mobile menu =====
+  const burger = document.getElementById("burger");
+  const mobile = document.getElementById("mobile");
+  const closeMobile = document.getElementById("closeMobile");
+
+  burger?.addEventListener("click", () => mobile.classList.add("is-open"));
+  closeMobile?.addEventListener("click", () => mobile.classList.remove("is-open"));
+  mobile?.addEventListener("click", (e) => {
+    if (e.target === mobile) mobile.classList.remove("is-open");
+  });
+
+  // smooth anchors
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener("click", (e) => {
+      const id = a.getAttribute("href");
+      if (!id || id === "#") return;
+
+      const el = document.querySelector(id);
+      if (!el) return;
+
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      mobile?.classList.remove("is-open");
+    });
+  });
+
+  // year
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ===== Custom language dropdown =====
+  const langDropdown = document.getElementById("langDropdown");
+  const langBtn = document.getElementById("langBtn");
+
+  langBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // чтобы не закрывалось сразу обработчиком outside-click
+    langDropdown?.classList.toggle("is-open");
+  });
+
+  // close on outside click
+  document.addEventListener("click", (e) => {
+    if (!langDropdown) return;
+    if (langDropdown.contains(e.target)) return;
+    langDropdown.classList.remove("is-open");
+  });
+
+  // close on ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") langDropdown?.classList.remove("is-open");
+  });
+
+
+  const i18n = {
+    en: {
+      footer_privacy: "Privacy policy",
+      footer_terms: "Terms of service",
+      footer_contacts_label: "Contacts:",
+
+      brand_aria_home: "Home",
+      nav_aria: "Navigation",
+
+      nav_about: "About",
+      nav_program: "Format",
+      nav_reviews: "Reviews",
+      nav_contacts: "Contacts",
+
+      header_tg: "Go to Telegram",
+      burger_open: "Open menu",
+
+      mobile_menu_title: "Menu",
+      mobile_close: "Close",
+
+      hero_kicker: "Language learning • practice • results",
+      hero_h1: "Learn a foreign language easily — without boredom",
+      hero_subtitle:
+        "A teacher’s Telegram channel. Simple explanations, real practice and useful materials that help you actually start speaking.",
+      hero_btn_tg: "Subscribe on Telegram",
+      hero_btn_more: "Learn more",
+
+      about_h2: "About us",
+
+      about_card1_h3: "Clear",
+      about_card1_p:
+        "After joining our Telegram channel, you get instant access to materials and examples. Posts and visuals help you quickly understand the format and practical value.",
+
+      about_card2_h3: "Practical",
+      about_card2_p:
+        "Maximum practical value: structured tips, detailed explanations and useful materials in our Telegram channel.",
+
+      about_card3_h3: "Community",
+      about_card3_p:
+        "An active community: news, expert breakdowns, announcements and feedback — all in one place.",
+
+      program_h2: "Format and features",
+
+      program_left_h3: "Telegram channel for language learning",
+      program_left_li1: "Lessons, exercises and vocabulary",
+      program_left_b1: "Instant access",
+
+      program_left_li2: "Language learning tips",
+      program_left_b2: "Regularly",
+
+      program_left_li3: "Light practice: memes, dialogues, mini tasks",
+      program_left_b3: "Always available",
+
+      program_right_h3: "Group lessons",
+      program_right_li1: "Level-based program (A1–B2)",
+      program_right_b1: "Weekly",
+
+      program_right_li2: "Teacher support and Q&A",
+      program_right_b2: "Online chat",
+
+      program_right_li3: "Comfortable learning pace",
+      program_right_b3: "Limited spots",
+
+      services_h2: "Services",
+
+      services_left_h3: "Services",
+      services_left_li1: "Individual lessons",
+      services_left_li2: "Exam preparation",
+
+      services_right_h3: "Also available",
+      services_right_li1: "Group lessons (3–7 people)",
+      services_right_b1: "60 min",
+      services_right_li2: "Consultation",
+
+      program_main_h3: "Main action",
+      program_main_p:
+        "Lessons, practice and support are waiting for you in Telegram. Start today — access is open.",
+      program_main_btn_tg: "Go to Telegram",
+
+      reviews_h2: "Reviews",
+
+      reviews_card1_h3: "Andriy Kovalenko",
+      reviews_card1_p:
+        "I was preparing for an exam and everything was mixed up in my head. The explanations here really helped. It’s great that you can rewatch materials anytime.",
+
+      reviews_card2_h3: "Ilya Sorokin",
+      reviews_card2_p:
+        "At first I just read the channel. Then I joined group lessons — huge difference. It became much easier to understand topics.",
+
+      reviews_card3_h3: "Lucas Meyer",
+      reviews_card3_p:
+        "I was worried about the language, but everything is explained clearly. Feels human, not like typical paid courses.",
+
+      contacts_h2: "Contacts",
+
+      contacts_tg_h3: "Telegram",
+      contacts_tg_html:
+        'Channel: <a href="https://t.me/your_channel" target="_blank" rel="noopener">@YOUR_CHANNEL</a><br/>',
+      contacts_tg_btn: "Go to Telegram",
+
+      contacts_other_h3: "Other contacts",
+      contacts_other_html:
+        'Email: <a href="mailto:hello@example.com">hello@example.com</a>',
+    },
+
+
+
+    uk: {
+      footer_privacy: "Політика конфіденційності",
+      footer_terms: "Користувацька угода",
+      footer_contacts_label: "Контакти:",
+
+      brand_aria_home: "На головну",
+      nav_aria: "Навігація",
+
+      nav_about: "Про нас",
+      nav_program: "Формат",
+      nav_reviews: "Відгуки",
+      nav_contacts: "Контакти",
+
+      header_tg: "Перейти в Telegram",
+      burger_open: "Відкрити меню",
+
+      mobile_menu_title: "Меню",
+      mobile_close: "Закрити",
+
+      hero_kicker: "Вивчення мов • практика • результат",
+      hero_h1: "Вивчи іноземну мову легко — без нудьги",
+      hero_subtitle:
+        "Авторський Telegram-канал викладача. Прості пояснення, жива практика та корисні матеріали, що допоможуть реально заговорити.",
+      hero_btn_tg: "Підписатися на Telegram",
+      hero_btn_more: "Дізнатися більше",
+
+      about_h2: "Про нас",
+
+      about_card1_h3: "Зрозуміло",
+      about_card1_p:
+        "Перейшовши в Telegram-канал, ви одразу отримаєте доступ до матеріалів і прикладів. Публікації та візуальні матеріали допоможуть швидко зрозуміти формат і користь.",
+
+      about_card2_h3: "Практично",
+      about_card2_p:
+        "Максимум практичної користі: структуровані поради, розбори та корисні матеріали в Telegram.",
+
+      about_card3_h3: "Спільнота",
+      about_card3_p:
+        "Активна спільнота: новини, експертні розбори, анонси та зворотний зв’язок — в одному місці.",
+
+      program_h2: "Формат та можливості",
+
+      program_left_h3: "Telegram-канал для вивчення мови",
+      program_left_li1: "Уроки, вправи та словники",
+      program_left_b1: "Доступ одразу",
+
+      program_left_li2: "Поради з вивчення мови",
+      program_left_b2: "Регулярно",
+
+      program_left_li3: "Легка практика: меми, діалоги, міні-завдання",
+      program_left_b3: "Постійно",
+
+      program_right_h3: "Групові заняття",
+      program_right_li1: "Програма за рівнями (A1–B2)",
+      program_right_b1: "Щотижня",
+
+      program_right_li2: "Підтримка викладача та відповіді",
+      program_right_b2: "Онлайн-чат",
+
+      program_right_li3: "Навчання у зручному темпі",
+      program_right_b3: "Обмежений набір",
+
+      services_h2: "Послуги",
+
+      services_left_h3: "Послуги",
+      services_left_li1: "Індивідуальне навчання",
+      services_left_li2: "Підготовка до іспитів",
+
+      services_right_h3: "Також доступно",
+      services_right_li1: "Навчання в групах (3–7 осіб)",
+      services_right_b1: "60 хв",
+      services_right_li2: "Консультація",
+
+
+
+
+      program_main_h3: "Головна дія",
+      program_main_p:
+        "У Telegram-каналі вас чекають уроки, практика та підтримка. Почніть вже сьогодні — доступ відкрито.",
+      program_main_btn_tg: "Перейти в Telegram",
+
+      reviews_h2: "Відгуки",
+
+      reviews_card1_h3: "Андрій Коваленко",
+      reviews_card1_p:
+        "Готувався до іспиту, в голові був хаос. Тут реально допомогли пояснення. Зручно, що матеріали можна переглядати у будь-який час.",
+
+      reviews_card2_h3: "Ілля Сорокін",
+      reviews_card2_p:
+        "Спочатку просто читав канал. Потім пішов у групу — відчув різницю. Стало простіше розуміти теми.",
+
+      reviews_card3_h3: "Lucas Meyer",
+      reviews_card3_p:
+        "Хвилювався через мову, але тут усе пояснюють доступно. Людський підхід, не як звичайні курси.",
+
+      contacts_h2: "Контакти",
+
+      contacts_tg_h3: "Telegram",
+      contacts_tg_html:
+        'Канал: <a href="https://t.me/your_channel" target="_blank" rel="noopener">@YOUR_CHANNEL</a><br/>',
+      contacts_tg_btn: "Перейти в Telegram",
+
+      contacts_other_h3: "Інші контакти",
+      contacts_other_html:
+        'Email: <a href="mailto:hello@example.com">hello@example.com</a>',
+    },
+
+
+
+    ru: {
+    footer_privacy: "Политика конфиденциальности",
+    footer_terms: "Пользовательское соглашение",
+    footer_contacts_label: "Контакты:",
+
+
+      brand_aria_home: "На главную",
+      nav_aria: "Навигация",
+
+      nav_about: "О нас",
+      nav_program: "Программа",
+      nav_reviews: "Отзывы",
+      nav_contacts: "Контакты",
+
+      header_tg: "Перейти в Telegram",
+      burger_open: "Открыть меню",
+
+      mobile_menu_title: "Меню",
+      mobile_close: "Закрыть",
+
+      hero_kicker: "Изучение языков • практика • результат",
+      hero_h1: "Выучи иностранный язык легко — без скуки",
+      hero_subtitle: "Авторский Telegram-канал от преподавателя. Простые объяснения, живая практика и полезные материалы, которые помогут реально начать говорить.",
+      hero_btn_tg: "Подписаться на Telegram",
+      hero_btn_more: "Узнать подробнее",
+
+
+      about_h2: "О нас",
+
+      about_card1_h3: "Понятно",
+      about_card1_p: "Перейдя в Telegram-канал, вы сразу получите доступ к нашим материалам и примерам работ. Публикации и наглядные визуальные материалы помогут быстро разобраться в формате и практической ценности контента.",
+      about_card2_h3: "Практично",
+      about_card2_p: "Максимум практической ценности: структурированные рекомендации, аналитические разборы и полезные материалы в нашем Telegram-канале.",
+      about_card3_h3: "Сообщество",
+      about_card3_p: "Активное сообщество: новости, экспертные разборы, анонсы и обратная связь — всё в одном пространстве.",
+
+      program_h2: "Формат и возможности",
+
+      program_left_h3: "Telegram-канал для изучения языка",
+      program_left_li1: "Уроки, упражнения и словари",
+      program_left_b1: "Доступ сразу",
+      program_left_li2: "Советы по изучению языка",
+      program_left_b2: "Регулярно",
+      program_left_li3: "Лёгкая практика: мемы, диалоги, мини-задания",
+      program_left_b3: "Постоянно",
+
+      program_right_h3: "Групповые занятия",
+      program_right_li1: "Программа по уровням (A1–B2)",
+      program_right_b1: "Еженедельно",
+      program_right_li2: "Ответы на вопросы и поддержка преподавателя",
+      program_right_b2: "Онлайн-чат",
+      program_right_li3: "Обучение в удобном темпе",
+      program_right_b3: "Ограниченный набор",
+
+      services_h2: "Услуги",
+
+      services_left_h3: "Услуги",
+      services_left_li1: "Обучение индивидуально",
+      services_left_li2: "Подготовка к экзаменам",
+
+      services_right_h3: "Также доступно",
+      services_right_li1: "Обучение в группах (от 3 до 7)",
+      services_right_b1: "60 минут",
+      services_right_li2: "Консультация",
+
+
+
+
+
+      program_main_h3: "Главное действие",
+      program_main_p: "В Telegram-канале вас ждут уроки, практика и поддержка. Начните уже сегодня — доступ открыт.",
+      program_main_btn_tg: "Перейти в Telegram",
+
+
+      reviews_h2: "Отзывы",
+
+      reviews_card1_h3: "Андрей Коваленко",
+      reviews_card1_p: "Готовился к экзамену, в голове была полная каша. Тут реально помогли разборы и объяснения ошибок. Понравилось, что материалы можно пересматривать в Telegram в любое время. Стало намного спокойнее перед тестом.”",
+      reviews_card2_h3: "Илья Сорокин",
+      reviews_card2_p: "Сначала просто читал канал, думал, ну ок, полезно. Потом записался в группу — вообще другой уровень. Стало проще понимать темы, плюс мотивация не пропадает.”",
+      reviews_card3_h3: "Lucas Meyer",
+      reviews_card3_p: "Сначала переживал из-за языка, но всё объясняют очень понятно. Формат удобный, без перегруза. Чувствуется нормальный человеческий подход, а не «курсы ради денег».”",
+
+
+      contacts_h2: "Контакты",
+
+      contacts_tg_h3: "Telegram",
+      contacts_tg_html: 'Канал: <a href="https://t.me/your_channel" target="_blank" rel="noopener">@YOUR_CHANNEL</a><br/>',
+      contacts_tg_btn: "Перейти в Telegram",
+      contacts_other_h3: "Другие контакты",
+      contacts_other_html: 'Email: <a href="mailto:hello@example.com">hello@example.com</a>',
+
+
+    }
+  };
+
+  const langMeta = {
+    en: { label: "EN", flag: "fi-us" }, 
+    uk: { label: "UA", flag: "fi-ua" },
+    ru: { label: "RU", flag: "fi-ru" }
+  };
+
+  function applyLang(lang) {
+    const dict = i18n[lang];
+    if (!dict) return;
+
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (dict[key] !== undefined) el.textContent = dict[key];
+    });
+
+    document.querySelectorAll("[data-i18n-html]").forEach(el => {
+      const key = el.getAttribute("data-i18n-html");
+      if (dict[key] !== undefined) el.innerHTML = dict[key];
+    });
+
+    document.querySelectorAll("[data-i18n-attr]").forEach(el => {
+      const raw = el.getAttribute("data-i18n-attr"); 
+      const [attr, key] = raw.split(":").map(s => s.trim());
+      if (attr && key && dict[key] !== undefined) el.setAttribute(attr, dict[key]);
+    });
+
+    const meta = langMeta[lang] || langMeta.en;
+    const flagEl = document.getElementById("langFlag");
+    const labelEl = document.getElementById("langLabel");
+    if (flagEl) flagEl.className = `fi ${meta.flag} fis`;
+    if (labelEl) labelEl.textContent = meta.label;
+
+    localStorage.setItem("lang", lang);
+  }
+
+  document.addEventListener("click", (e) => {
+    const item = e.target.closest("[data-lang]");
+    if (!item) return;
+
+    applyLang(item.getAttribute("data-lang"));
+    langDropdown?.classList.remove("is-open");
+  });
+
+  applyLang(localStorage.getItem("lang") || "en");
+</script>
+
+
+    </body>
+    </html>
