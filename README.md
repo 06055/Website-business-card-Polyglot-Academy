@@ -82,15 +82,7 @@ Dropdown-меню вибору мови
 
 Структура проєкту
 
-Website-business-card-Polyglot-Academy/
-├── main.py                # Flask application (Jinja2 rendering)
-├── templates/             # HTML templates
-│   └── index.html
-├── static/
-│   ├── css/               # Styles
-│   ├── js/                # JavaScript logic
-│   └── images/            # Images / icons
-└── README.md
+<img width="441" height="176" alt="image" src="https://github.com/user-attachments/assets/1012d308-5bf6-473d-9a8e-4ca2bc665da8" />
 
 ────────────────────────────────────────────
 
@@ -207,15 +199,7 @@ Jinja2
 
 Project structure
 
-Website-business-card-Polyglot-Academy/
-├── main.py                # Flask application (Jinja2 rendering)
-├── templates/             # HTML templates
-│   └── index.html
-├── static/
-│   ├── css/               # Styles
-│   ├── js/                # JavaScript logic
-│   └── images/            # Images / icons
-└── README.md
+<img width="441" height="176" alt="image" src="https://github.com/user-attachments/assets/359ef205-3721-4fae-9df1-7a12baad0eb3" />
 
 ────────────────────────────────────────────
 
