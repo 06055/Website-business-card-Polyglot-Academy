@@ -1,38 +1,236 @@
-# Polyglot Academy — сайт-визитка
+Website-business-card-Polyglot-Academy — Landing Page (Ukrainian version below)
 
-Одностраничный сайт академии на Flask: лендинг, политика конфиденциальности, условия использования.
-Переключение языков (EN/RU/UK/DE) — на стороне браузера, без запросов к серверу.
+Made with HTML / CSS / JavaScript / Flask (Jinja2)
+License: MIT
 
-Ни базы данных, ни авторизации, ни загрузки файлов, ни секретов. Весь контент лежит в репозитории.
+Website-business-card-Polyglot-Academy — це сучасний landing-сайт-візитка для Telegram-каналу та онлайн-школи Polyglot Academy, присвячених вивченню іноземних мов.
+Сайт презентує проєкт, формат навчання, відгуки та контакти, а також надає зручний перехід у Telegram.
 
-```
-main.py                      маршруты: /  /privacy  /terms  /health
-templates/                   страницы (Jinja2)
-static/polyglot_academy_style.css
-static/images/               логотип и фон
-tests/test_site.py           тесты: страницы, статика, health, 404, файлы деплоя
-Dockerfile, .dockerignore    production-образ (gunicorn, non-root, healthcheck)
-DEPLOYMENT.md                как это разворачивается на VPS
-```
+────────────────────────────────────────────
 
-## Запуск локально
+Опис проєкту
 
-```powershell
-python -m venv venv
-venv\Scripts\pip install -r requirements.txt
-venv\Scripts\python main.py
-```
+Проєкт реалізований як односторінковий сайт з акцентом на:
 
-http://127.0.0.1:5000 — лендинг. Настройки `HOST`, `PORT`, `FLASK_DEBUG` (см. `.env.example`)
-нужны только здесь: в production gunicorn импортирует `app`, и debug выключен всегда.
+просту навігацію
 
-## Тесты
+швидкий доступ до ключової інформації
 
-```powershell
-venv\Scripts\python -m unittest discover -s tests -v
-```
+багатомовність
 
-## Production
+адаптивність для мобільних і десктопних пристроїв
 
-Контейнер в общем стеке на VPS (сервис `website`), порт 8080 только на `127.0.0.1`, снаружи —
-позже через Caddy. Подробности: [DEPLOYMENT.md](DEPLOYMENT.md).
+Flask використовується виключно для рендера HTML-шаблонів (Jinja2).
+База даних та серверна бізнес-логіка не використовуються.
+
+────────────────────────────────────────────
+
+Основні можливості
+
+• Landing-візитка Telegram-каналу та онлайн-школи
+• Три мови інтерфейсу: English / Українська / Русский
+• Перемикання мови без перезавантаження сторінки
+• Плавний scroll до секцій сайту
+• Фіксована верхня панель з динамічною зміною стилю
+• Мобільне меню (burger menu)
+• Мінімалістичні анімації UI
+• Адаптивна верстка
+
+────────────────────────────────────────────
+
+Використані технології
+
+Frontend
+
+HTML5
+
+CSS3
+
+JavaScript (Vanilla JS)
+
+Backend
+
+Python
+
+Flask
+
+Jinja2 (templates rendering)
+
+────────────────────────────────────────────
+
+JavaScript — що реалізовано
+
+Плавна навігація по якорях (scrollIntoView)
+
+Динамічна зміна стилю header при скролі
+
+Мобільне меню (відкриття / закриття / overlay)
+
+Dropdown-меню вибору мови
+
+Повна клієнтська система локалізації (i18n):
+
+словники для EN / UA / RU
+
+заміна тексту, HTML та атрибутів
+
+збереження обраної мови в localStorage
+
+Автоматичне оновлення року в footer
+
+────────────────────────────────────────────
+
+Структура проєкту
+
+<img width="441" height="176" alt="image" src="https://github.com/user-attachments/assets/1012d308-5bf6-473d-9a8e-4ca2bc665da8" />
+
+────────────────────────────────────────────
+
+Як запустити проєкт локально
+1. Встановити Python
+
+https://www.python.org/downloads/
+
+(під час встановлення увімкнути Add Python to PATH)
+
+2. Встановити Flask
+pip install flask
+
+3. Запустити сервер
+python main.py
+
+4. Відкрити в браузері
+http://127.0.0.1:5000
+
+
+────────────────────────────────────────────
+
+Призначення проєкту
+
+• Публічний landing-сайт
+• Представлення Telegram-каналу Polyglot Academy
+• Представлення онлайн-школи
+• Навчальний та портфоліо-проєкт
+
+────────────────────────────────────────────
+
+Ідеї для подальшого розвитку
+
+• Підключення бази даних
+• Адмін-панель для керування контентом
+• Форма запису на заняття
+• SEO-оптимізація та Open Graph
+• Деплой на VPS / Docker
+• Analytics (privacy-friendly)
+
+────────────────────────────────────────────
+
+Автор
+
+GitHub: https://github.com/06055
+
+Проєкт створено для реального використання та як частину портфоліо.
+Ліцензія MIT — дозволено використання, модифікацію та поширення з вказанням автора.
+
+
+────────────────────────────────────────────
+ENG
+
+
+Website-business-card-Polyglot-Academy — Landing Page (English version)
+
+Made with HTML / CSS / JavaScript / Flask (Jinja2)
+License: MIT
+
+Website-business-card-Polyglot-Academy is a modern one-page landing website for the Polyglot Academy Telegram channel and online language school.
+It presents the project, learning format, reviews and contacts, with a direct link to Telegram.
+
+────────────────────────────────────────────
+
+Project description
+
+The project is implemented as a single-page landing with focus on:
+
+clean navigation
+
+fast access to key information
+
+multilingual interface
+
+responsive design
+
+Flask is used only for HTML template rendering (Jinja2).
+No database or backend business logic is included.
+
+────────────────────────────────────────────
+
+Key features
+
+• Landing page for Telegram channel & online school
+• Three interface languages: EN / UA / RU
+• Client-side language switching (no reload)
+• Smooth scrolling navigation
+• Dynamic sticky header
+• Mobile burger menu
+• Minimal UI animations
+• Fully responsive layout
+
+────────────────────────────────────────────
+
+Technologies
+
+Frontend
+
+HTML5
+
+CSS3
+
+Vanilla JavaScript
+
+Backend
+
+Python
+
+Flask
+
+Jinja2
+
+────────────────────────────────────────────
+
+Project structure
+
+<img width="441" height="176" alt="image" src="https://github.com/user-attachments/assets/359ef205-3721-4fae-9df1-7a12baad0eb3" />
+
+────────────────────────────────────────────
+
+How to run locally
+pip install flask
+python main.py
+
+
+Open in browser:
+
+http://127.0.0.1:5000
+
+
+────────────────────────────────────────────
+
+Purpose
+
+• Public landing website
+• Telegram channel promotion
+• Online school presentation
+• Portfolio & educational project
+
+────────────────────────────────────────────
+
+Author
+
+GitHub: https://github.com/06055
+
+MIT License — free to use, modify and distribute with attribution.
+
+
+
+
+
