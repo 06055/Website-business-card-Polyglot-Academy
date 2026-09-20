@@ -1,0 +1,22 @@
+# The VPS is Linux: everything it executes or parses must arrive with LF endings, whatever
+# git's autocrlf does on the developer's Windows machine.
+*.sh            text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.service       text eol=lf
+*.sql           text eol=lf
+Dockerfile      text eol=lf
+.dockerignore   text eol=lf
+Caddyfile       text eol=lf
+Caddyfile.*     text eol=lf
+
+# Windows-only helpers stay CRLF.
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+
+# Never touched by line-ending conversion.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.ico           binary
+*.sqlite3       binary

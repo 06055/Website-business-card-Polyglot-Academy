@@ -1,0 +1,35 @@
+# Secrets: only .env.example (placeholders) belongs in a repository.
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Node (only if a build step is ever added)
+node_modules/
+
+# logs, databases, backups, temporary files
+*.log
+*.sqlite3
+*.sqlite3-journal
+backups/
+tmp/
+*.tmp
+
+# keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
