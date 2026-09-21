@@ -387,6 +387,10 @@ footer{
     display: grid;
     place-items: center;
     flex-shrink: 0;
+    /* The logo brings its own shape on a transparent background: no tile, frame or shadow behind it. */
+    background: none;
+    border: 0;
+    box-shadow: none;
 }
 
 .brand__mark-img{
@@ -395,6 +399,9 @@ footer{
     object-fit: contain;
     display: block;
     filter: drop-shadow(0 6px 18px rgba(0,0,0,.45));
+    /* The artwork fills ~77% of its transparent canvas: scale it back to the old mark's visual size.
+       A transform never changes layout, so the 44px slot, the header and the text stay where they were. */
+    transform: scale(1.25);
 }
 
 .legal{

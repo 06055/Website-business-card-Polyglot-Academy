@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Polyglot Academy</title>
 
+    <link rel="icon" href="{{ url_for('static', filename='icons/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='icons/site.webmanifest') }}">
+    <meta name="theme-color" content="#07152f">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='polyglot_academy_style.css') }}">
 
     <link
@@ -22,7 +29,11 @@
     <div class="header__inner">
         <a class="brand" href="#top" aria-label="Home" data-i18n-attr="aria-label:brand_aria_home">
         <div class="brand__mark">
-          <img src="static/images/polyglot_mark.png" class="brand__mark-img">
+          <img class="brand__mark-img" width="44" height="44" alt="" decoding="async"
+               src="{{ url_for('static', filename='icons/polyglot-logo.png') }}"
+               srcset="{{ url_for('static', filename='icons/android-chrome-192x192.png') }} 192w,
+                       {{ url_for('static', filename='icons/polyglot-logo.png') }} 1254w"
+               sizes="44px">
         </div>
 
         <div class="brand__name"><b>Polyglot Academy</b></div>

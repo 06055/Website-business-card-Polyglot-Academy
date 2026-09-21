@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, send_from_directory
 
 app = Flask(__name__)
 
@@ -17,6 +17,12 @@ def privacy():
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
+
+
+@app.route("/favicon.ico")
+def favicon():
+    """Browsers and search engines ask for /favicon.ico at the root whatever the <link> says."""
+    return send_from_directory(app.static_folder, "icons/favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 
 @app.route("/health")
