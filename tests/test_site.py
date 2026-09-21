@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import main  # noqa: E402
 from main import app  # noqa: E402
 
 
@@ -51,7 +52,7 @@ class PagesTests(unittest.TestCase):
 
 class BrandAssetsTests(unittest.TestCase):
     """The favicon/logo pack: linked from every page, served, and nothing a page asks for is missing."""
-    ICONS = ('favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
+    ICONS = ('favicon.ico', 'favicon.svg', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
              'android-chrome-192x192.png', 'android-chrome-512x512.png', 'site.webmanifest', 'polyglot-logo.png')
     PAGES = ('/', '/privacy', '/terms')
 
@@ -84,6 +85,7 @@ class BrandAssetsTests(unittest.TestCase):
             html = self.fetch(page)[1].decode('utf-8')
             with self.subTest(page=page):
                 self.assertIn('href="/static/icons/favicon.ico"', html)
+                self.assertIn('type="image/svg+xml" href="/static/icons/favicon.svg"', html)
                 self.assertIn('href="/static/icons/favicon-32x32.png"', html)
                 self.assertIn('href="/static/icons/favicon-16x16.png"', html)
                 self.assertIn('rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png"', html)
@@ -123,6 +125,209 @@ class BrandAssetsTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, 'image/vnd.microsoft.icon')
         self.assertEqual(body, (ROOT / 'static' / 'icons' / 'favicon.ico').read_bytes())
+
+
+class LanguageTests(unittest.TestCase):
+    """The first language a visitor sees: a choice made by hand, then the browser's language, then English.
+
+    The server renders it directly, so there is never an English page that turns Ukrainian after loading.
+    """
+    HEADLINES = {'en': 'Learn a foreign language', 'uk': 'Вивчайте іноземну мову', 'ru': 'Изучайте иностранный язык'}
+
+    def setUp(self):
+        app.config.update(TESTING=True)
+        self.client = app.test_client()
+
+    def page(self, path='/', accept=None, cookie=None):
+        if cookie is not None:
+            self.client.set_cookie(main.LANGUAGE_COOKIE, cookie)
+        headers = {'Accept-Language': accept} if accept is not None else {}
+        response = self.client.get(path, headers=headers)
+        return response, response.get_data(as_text=True)
+
+    def language_of(self, html):
+        return re.search(r'<html lang="([a-z]+)"', html).group(1)
+
+    def test_the_browser_language_decides_the_first_visit(self):
+        for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'en'), ('pl-PL', 'en')):
+            with self.subTest(accept=accept):
+                response, html = self.page(accept=accept)
+                self.assertEqual(self.language_of(html), expected)
+                self.assertEqual(response.headers['Content-Language'], expected)
+                self.assertIn(self.HEADLINES[expected], html, 'the text itself is rendered in that language')
+
+    def test_detection_rules(self):
+        cases = {'uk': 'uk', 'uk-UA,uk;q=0.9,en;q=0.8': 'uk', 'ru': 'ru', 'ru-BY,ru;q=0.9': 'ru', 'ru-KZ': 'ru',
+                 'en-GB': 'en', 'de-DE,de;q=0.9': 'en', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
+                 # the best-rated language wins, whatever the order it is written in
+                 'en;q=0.4, uk;q=0.9': 'uk',
+                 # the first preference decides: a German browser gets English even if Ukrainian comes second
+                 'de-DE,uk;q=0.9': 'en'}
+        for accept, expected in cases.items():
+            with self.subTest(accept=accept):
+                self.assertEqual(self.language_of(self.page(accept=accept)[1]), expected)
+
+    def test_a_language_chosen_by_hand_wins_over_the_browser(self):
+        for cookie in ('en', 'uk', 'ru'):
+            with self.subTest(cookie=cookie):
+                self.assertEqual(self.language_of(self.page(accept='de-DE', cookie=cookie)[1]), cookie)
+        self.assertEqual(self.language_of(self.page(accept='uk-UA', cookie='en')[1]), 'en')
+
+    def test_an_unknown_saved_value_falls_back_to_the_browser(self):
+        self.assertEqual(self.language_of(self.page(accept='ru-RU', cookie='fr')[1]), 'ru')
+
+    def test_the_legal_pages_follow_the_same_rules(self):
+        for path, marker in (('/privacy', 'Політика конфіденційності'), ('/terms', 'Користувацька угода')):
+            with self.subTest(path=path):
+                response, html = self.page(path, accept='uk-UA')
+                self.assertEqual(self.language_of(html), 'uk')
+                self.assertIn(marker, html)
+
+    def test_caches_keep_the_languages_apart(self):
+        response = self.page(accept='uk-UA')[0]
+        self.assertIn('Accept-Language', response.headers['Vary'])
+        self.assertIn('Cookie', response.headers['Vary'])
+
+    def test_the_page_carries_every_language_for_switching_without_a_reload(self):
+        html = self.page(accept='en-US')[1]
+        data = json.loads(re.search(r'<script type="application/json" id="i18n-data">(.*?)</script>', html, re.S).group(1))
+        self.assertEqual(set(data), {'en', 'uk', 'ru'})
+        self.assertEqual(data['uk']['hero_h1'], main.TRANSLATIONS['uk']['home']['hero_h1'])
+        self.assertIn('data-lang-cookie="polyglot_lang"', html)
+
+    def test_the_switcher_saves_the_choice_and_never_the_automatic_one(self):
+        """static/site.js: only a click writes the cookie; the old localStorage "en" is not a choice."""
+        script = (ROOT / 'static' / 'site.js').read_text(encoding='utf-8')
+        self.assertIn('Max-Age=31536000; Path=/; SameSite=Lax', script)
+        self.assertIn('function chooseLang(lang)', script)
+        self.assertIn('saveChoice(lang)', script.split('function chooseLang(lang)', 1)[1].split('}', 1)[0])
+        self.assertIn('old === "uk" || old === "ru"', script)
+        self.assertNotIn('localStorage.setItem', script)
+
+
+class ContentTests(unittest.TestCase):
+    """The texts themselves: complete in three languages, no placeholders, the A1-C1 path."""
+    LEVELS = ('A1', 'A2', 'B1', 'B2', 'C1')
+
+    def setUp(self):
+        app.config.update(TESTING=True)
+        self.client = app.test_client()
+
+    def html(self, path, language):
+        self.client.set_cookie(main.LANGUAGE_COOKIE, language)
+        return self.client.get(path).get_data(as_text=True)
+
+    def test_every_language_has_every_text(self):
+        sections = main.TRANSLATIONS['en'].keys()
+        for section in sections:
+            keys = {language: set(main.TRANSLATIONS[language][section]) for language in main.LANGUAGES}
+            with self.subTest(section=section):
+                self.assertEqual(keys['uk'], keys['en'])
+                self.assertEqual(keys['ru'], keys['en'])
+                for language in main.LANGUAGES:
+                    empty = [key for key, text in main.TRANSLATIONS[language][section].items() if not text.strip()]
+                    self.assertEqual(empty, [], language)
+
+    def test_every_key_a_template_uses_exists(self):
+        for template, section in (('polyglot_academy.html', 'home'), ('privacy.html', 'privacy'),
+                                  ('terms.html', 'terms'), ('_legal_top.html', 'common')):
+            text = (ROOT / 'templates' / template).read_text(encoding='utf-8')
+            keys = set(re.findall(r'data-i18n(?:-html)?="([a-z0-9_]+)"', text))
+            keys |= set(re.findall(r'data-i18n-attr="[a-z-]+:([a-z0-9_]+)"', text))
+            known = set(main.TRANSLATIONS['en']['common']) | set(main.TRANSLATIONS['en'][section])
+            with self.subTest(template=template):
+                self.assertTrue(keys)
+                self.assertEqual(keys - known, set())
+
+    def test_no_placeholder_or_template_text_reaches_a_visitor(self):
+        for language in main.LANGUAGES:
+            for path in ('/', '/privacy', '/terms'):
+                html = self.html(path, language)
+                # the embedded JSON legitimately ends objects with "}}"; the markup must not
+                markup = re.sub(r'<script type="application/json" id="i18n-data">.*?</script>', '', html, flags=re.S)
+                with self.subTest(language=language, path=path):
+                    for placeholder in ('Name Surname', 'insert your link', 'Short description', 'Step #',
+                                        't.me/https://', '{{', '}}', '{%'):
+                        self.assertNotIn(placeholder, markup)
+
+    def test_the_program_is_a1_to_c1_and_never_beyond(self):
+        for language in main.LANGUAGES:
+            html = self.html('/', language)
+            with self.subTest(language=language):
+                codes = re.findall(r'<span class="level__code">([A-C][12])</span>', html)
+                self.assertEqual(tuple(codes), self.LEVELS, 'all five levels, in order')
+                self.assertIn('A1–C1', html)
+                self.assertIn('A1 → C1', html)
+                self.assertNotIn('C2', html)
+                self.assertNotIn('A1–B2', html)
+
+    def test_each_level_has_a_name_and_a_description_in_every_language(self):
+        names = {'en': ('Beginner', 'Elementary', 'Intermediate', 'Upper-Intermediate', 'Advanced'),
+                 'uk': ('Початковий', 'Елементарний', 'Середній', 'Вище середнього', 'Просунутий'),
+                 'ru': ('Начальный', 'Элементарный', 'Средний', 'Выше среднего', 'Продвинутый')}
+        for language, expected in names.items():
+            home = main.TRANSLATIONS[language]['home']
+            with self.subTest(language=language):
+                self.assertEqual(tuple(home[f'level_{code.lower()}_name'] for code in self.LEVELS), expected)
+                for code in self.LEVELS:
+                    self.assertGreater(len(home[f'level_{code.lower()}_p']), 40)
+
+    def test_no_promise_of_a_result_in_a_number_of_days(self):
+        for language in main.LANGUAGES:
+            text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False).lower()
+            with self.subTest(language=language):
+                self.assertIsNone(re.search(r'\b\d+\s*(days|дн|день|тиж|недел|weeks|місяц|месяц)', text))
+                self.assertNotIn('guarantee you', text)
+
+    def test_the_community_is_materials_and_practice_not_news(self):
+        expected = {'en': ('materials', 'humor'), 'uk': ('Матеріали', 'гумору'), 'ru': ('Материалы', 'юмора')}
+        for language, words in expected.items():
+            community = main.TRANSLATIONS[language]['home']['about_card3_p']
+            with self.subTest(language=language):
+                for word in words:
+                    self.assertIn(word, community)
+                self.assertNotRegex(community.lower(), r'news|новин|новост')
+
+    def test_every_in_page_link_has_a_target(self):
+        html = self.html('/', 'en')
+        ids = set(re.findall(r'id="([^"]+)"', html))
+        for anchor in set(re.findall(r'href="#([^"]+)"', html)):
+            with self.subTest(anchor=anchor):
+                self.assertIn(anchor, ids)
+        for path in ('/privacy', '/terms', '/'):
+            self.assertIn(f'href="{path}"', html + self.html('/privacy', 'en'))
+
+    def test_the_telegram_link_is_the_real_channel(self):
+        for path in ('/', '/privacy', '/terms'):
+            html = self.html(path, 'en')
+            with self.subTest(path=path):
+                links = set(re.findall(r'href="(https://t\.me/[^"]*)"', html))
+                self.assertEqual(links, {'https://t.me/polyglotacademyofficial'})
+
+
+class FaviconTests(unittest.TestCase):
+    """The small icon is its own simple mark - one letter - not the detailed emblem shrunk to a blur."""
+    ICONS = ROOT / 'static' / 'icons'
+
+    def test_the_svg_favicon_is_a_simple_mark(self):
+        svg = (self.ICONS / 'favicon.svg').read_text(encoding='utf-8')
+        self.assertTrue(svg.startswith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">'))
+        self.assertEqual(svg.count('<path'), 1, 'one shape on a tile - readable at 16 px')
+        self.assertLess(len(svg), 2000)
+        client = app.test_client()
+        response = client.get('/static/icons/favicon.svg')
+        self.assertEqual(response.mimetype, 'image/svg+xml')
+        response.close()
+
+    def test_the_png_and_ico_sizes(self):
+        for name, size in (('favicon-16x16.png', 16), ('favicon-32x32.png', 32)):
+            data = (self.ICONS / name).read_bytes()
+            with self.subTest(name=name):
+                self.assertEqual(struct.unpack('>II', data[16:24]), (size, size))
+        ico = (self.ICONS / 'favicon.ico').read_bytes()
+        count = struct.unpack('<H', ico[4:6])[0]
+        self.assertEqual(sorted((ico[6 + 16 * i] or 256) for i in range(count)), [16, 32, 48])
+        self.assertLess(len(ico), 20_000, 'a favicon, not the full emblem')
 
 
 class DeploymentFilesTests(unittest.TestCase):

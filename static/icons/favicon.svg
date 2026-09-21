@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <title>Polyglot Academy</title>
+  <defs>
+    <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d2e76"/><stop offset="1" stop-color="#061438"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc45c"/><stop offset="1" stop-color="#f08c2c"/>
+    </linearGradient>
+  </defs>
+  <rect width="16" height="16" rx="3.5" fill="url(#navy)"/>
+  <path fill="url(#gold)" fill-rule="evenodd" d="M4 3H9.0A3.5 3.5 0 0 1 9.0 10H7V13H4ZM8.0 5H9.0A1.0 1.0 0 0 1 10 6.0V7.0A1.0 1.0 0 0 1 9.0 8H8.0A1.0 1.0 0 0 1 7 7.0V6.0A1.0 1.0 0 0 1 8.0 5Z"/>
+</svg>

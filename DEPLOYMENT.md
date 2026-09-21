@@ -62,8 +62,20 @@ cd /opt/polyglot && docker compose build website && docker compose up -d website
 | `/static/...` | CSS и картинки; позже их может раздавать Caddy напрямую |
 
 `python -m unittest discover -s tests` проверяет все страницы, health, статику, 404, отключённый
-debug и сами файлы деплоя. Healthcheck зашит в образ (`HEALTHCHECK` в Dockerfile) и ходит на
-`/health` раз в 30 секунд.
+debug, выбор языка, тексты и сами файлы деплоя. Healthcheck зашит в образ (`HEALTHCHECK` в
+Dockerfile) и ходит на `/health` раз в 30 секунд.
+
+## Языки
+
+Все тексты сайта — только в `translations/en.json`, `uk.json`, `ru.json` (разделы `common`, `home`,
+`privacy`, `terms`; у трёх файлов одинаковые ключи — это проверяет тест). Первый язык страницы
+выбирает сервер, поэтому ничего не «перескакивает» после загрузки:
+
+1. язык, выбранный вручную, — cookie `polyglot_lang` (год, `SameSite=Lax`);
+2. иначе первый язык браузера из `Accept-Language`: `uk*` → UA, `ru*` → RU, всё остальное → EN.
+
+Переключатель меняет текст сразу, без перезагрузки, из тех же JSON и записывает cookie. Ответы
+несут `Vary: Accept-Language, Cookie` и `Content-Language`. Внешних GeoIP-сервисов нет.
 
 ## Что проверено, а что нет
 

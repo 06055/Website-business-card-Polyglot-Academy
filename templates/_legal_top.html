@@ -1,0 +1,19 @@
+  <div class="legal__top">
+    <a href="/" class="legal__back" data-i18n="back_btn">{{ t.back_btn }}</a>
+
+    <div class="langdd langdd--legal" id="langDropdown">
+      <button class="legal__back langdd__btn" type="button" id="langBtn" aria-haspopup="true" aria-expanded="false"
+              aria-label="{{ t.lang_choose }}" data-i18n-attr="aria-label:lang_choose">
+        <span class="fi {{ languages[lang].flag }} fis" id="langFlag" aria-hidden="true"></span>
+        <span class="langdd__label" id="langLabel">{{ languages[lang].label }}</span>
+        <span class="langdd__caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="langdd__menu" id="langMenu" role="menu" aria-label="{{ t.lang_title }}" data-i18n-attr="aria-label:lang_title">
+        {% for code, meta in languages.items() %}
+        <button class="langdd__item" type="button" data-lang="{{ code }}" role="menuitem" aria-pressed="{{ 'true' if code == lang else 'false' }}">
+          <span class="fi {{ meta.flag }} fis" aria-hidden="true"></span><span>{{ meta.name }}</span>
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
