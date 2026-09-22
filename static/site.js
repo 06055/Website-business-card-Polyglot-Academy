@@ -1,7 +1,7 @@
 /* Polyglot Academy - behaviour shared by every page: language, header, mobile menu.
  *
- * The server already renders the page in the right language (a language picked by hand, then the
- * browser's language, then English), so nothing is re-translated on load and nothing flashes.
+ * The server already renders the page in the right language (manual choice, IP country, then the
+ * browser language), so nothing is re-translated on load and nothing flashes.
  * This script only switches languages by hand - instantly, from the same texts the server used -
  * and remembers that choice in a cookie the server reads on the next visit.
  */
@@ -21,7 +21,11 @@
 
   function readCookie(name) {
     var match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
-    return match ? decodeURIComponent(match[1]) : "";
+    try {
+      return match ? decodeURIComponent(match[1]) : "";
+    } catch (e) {
+      return ""; // A malformed cookie must not disable the language switcher or mobile menu.
+    }
   }
 
   function saveChoice(lang) {

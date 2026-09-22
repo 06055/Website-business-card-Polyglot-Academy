@@ -2,6 +2,7 @@
 
     python -m unittest discover -s tests -v
 """
+import hashlib
 import json
 import os
 import re
@@ -9,11 +10,14 @@ import struct
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
+from urllib.parse import urljoin
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import main  # noqa: E402
+from geo import CountryDetector  # noqa: E402
 from main import app  # noqa: E402
 
 
@@ -36,7 +40,7 @@ class PagesTests(unittest.TestCase):
         self.assertEqual(response.get_json(), {'status': 'ok'})
 
     def test_static_files_are_served(self):
-        for path in ('/static/polyglot_academy_style.css', '/static/images/polyglot_mark.png'):
+        for path in ('/static/polyglot_academy_style.css', '/static/images/polyglot-hero-background.png'):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)
@@ -52,8 +56,9 @@ class PagesTests(unittest.TestCase):
 
 class BrandAssetsTests(unittest.TestCase):
     """The favicon/logo pack: linked from every page, served, and nothing a page asks for is missing."""
-    ICONS = ('favicon.ico', 'favicon.svg', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
-             'android-chrome-192x192.png', 'android-chrome-512x512.png', 'site.webmanifest', 'polyglot-logo.png')
+    ICONS = ('favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
+             'android-chrome-192x192.png', 'android-chrome-512x512.png', 'site.webmanifest',
+             'polyglot-owl-logo.png')
     PAGES = ('/', '/privacy', '/terms')
 
     def setUp(self):
@@ -81,23 +86,29 @@ class BrandAssetsTests(unittest.TestCase):
                 self.assertEqual(body, (ROOT / 'static' / 'icons' / name).read_bytes())
 
     def test_every_page_links_the_favicon_the_touch_icon_and_the_manifest(self):
+        version = main.FAVICON_VERSION
         for page in self.PAGES:
             html = self.fetch(page)[1].decode('utf-8')
             with self.subTest(page=page):
-                self.assertIn('href="/static/icons/favicon.ico"', html)
-                self.assertIn('type="image/svg+xml" href="/static/icons/favicon.svg"', html)
-                self.assertIn('href="/static/icons/favicon-32x32.png"', html)
-                self.assertIn('href="/static/icons/favicon-16x16.png"', html)
-                self.assertIn('rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png"', html)
-                self.assertIn('rel="manifest" href="/static/icons/site.webmanifest"', html)
+                self.assertIn(f'href="/static/icons/favicon.ico?v={version}"', html)
+                self.assertNotIn('favicon.svg', html)
+                self.assertIn(f'href="/static/icons/favicon-32x32.png?v={version}"', html)
+                self.assertIn(f'href="/static/icons/favicon-16x16.png?v={version}"', html)
+                self.assertIn(f'rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png?v={version}"', html)
+                self.assertIn(f'rel="manifest" href="/static/icons/site.webmanifest?v={version}"', html)
 
-    def test_the_header_shows_the_new_logo(self):
+    def test_the_header_shows_the_owl_logo(self):
         html = self.fetch('/')[1].decode('utf-8')
         header = html.split('<header', 1)[1].split('</header>', 1)[0]
-        self.assertIn('src="/static/icons/polyglot-logo.png"', header)
-        self.assertIn('/static/icons/android-chrome-192x192.png 192w', header, 'the light rendition for a 44px slot')
-        self.assertIn('width="44" height="44"', header, 'no layout shift while the logo loads')
-        self.assertNotIn('polyglot_mark.png', header)
+        self.assertIn(f'src="/static/icons/polyglot-owl-logo.png?v={main.FAVICON_VERSION}"', header)
+        self.assertIn('width="48" height="48"', header, 'no layout shift while the logo loads')
+        for gone in ('polyglot_mark.png', 'polyglot-logo.png', 'polyglot-owl-brand.png'):
+            self.assertNotIn(gone, header, 'an earlier logo is still in the header')
+
+    def test_the_icons_directory_holds_the_pack_and_nothing_else(self):
+        """No leftovers: every file here is linked from a page or the manifest."""
+        self.assertEqual(sorted(path.name for path in (ROOT / 'static' / 'icons').iterdir()),
+                         sorted(self.ICONS))
 
     def test_nothing_a_page_loads_is_missing(self):
         for page in self.PAGES:
@@ -113,7 +124,8 @@ class BrandAssetsTests(unittest.TestCase):
         self.assertTrue(manifest['icons'])
         for icon in manifest['icons']:
             with self.subTest(icon=icon['src']):
-                response, png = self.fetch(icon['src'])
+                self.assertIn(f'?v={main.FAVICON_VERSION}', icon['src'])
+                response, png = self.fetch(urljoin('/static/icons/site.webmanifest', icon['src']))
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(png[:8], b'\x89PNG\r\n\x1a\n')
                 width, height = struct.unpack('>II', png[16:24])
@@ -125,10 +137,11 @@ class BrandAssetsTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.mimetype, 'image/vnd.microsoft.icon')
         self.assertEqual(body, (ROOT / 'static' / 'icons' / 'favicon.ico').read_bytes())
+        self.assertIn('no-cache', response.headers['Cache-Control'])
 
 
 class LanguageTests(unittest.TestCase):
-    """The first language a visitor sees: a choice made by hand, then the browser's language, then English.
+    """Language priority: manual cookie, IP country, browser language, then English.
 
     The server renders it directly, so there is never an English page that turns Ukrainian after loading.
     """
@@ -138,17 +151,18 @@ class LanguageTests(unittest.TestCase):
         app.config.update(TESTING=True)
         self.client = app.test_client()
 
-    def page(self, path='/', accept=None, cookie=None):
+    def page(self, path='/', accept=None, cookie=None, country=None):
         if cookie is not None:
             self.client.set_cookie(main.LANGUAGE_COOKIE, cookie)
         headers = {'Accept-Language': accept} if accept is not None else {}
-        response = self.client.get(path, headers=headers)
+        with patch.object(main.COUNTRY_DETECTOR, 'country_for_request', return_value=country):
+            response = self.client.get(path, headers=headers)
         return response, response.get_data(as_text=True)
 
     def language_of(self, html):
         return re.search(r'<html lang="([a-z]+)"', html).group(1)
 
-    def test_the_browser_language_decides_the_first_visit(self):
+    def test_the_browser_language_is_the_fallback_when_country_is_unknown(self):
         for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'en'), ('pl-PL', 'en')):
             with self.subTest(accept=accept):
                 response, html = self.page(accept=accept)
@@ -156,13 +170,29 @@ class LanguageTests(unittest.TestCase):
                 self.assertEqual(response.headers['Content-Language'], expected)
                 self.assertIn(self.HEADLINES[expected], html, 'the text itself is rendered in that language')
 
+    def test_country_decides_the_first_visit(self):
+        for country, expected in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'en'), ('US', 'en')):
+            with self.subTest(country=country):
+                response, html = self.page(country=country, accept='ru-RU')
+                self.assertEqual(self.language_of(html), expected)
+                self.assertEqual(response.headers['Content-Language'], expected)
+
+    def test_manual_cookie_always_wins_over_country(self):
+        for country, cookie, expected in (('UA', 'en', 'en'), ('RU', 'uk', 'uk')):
+            with self.subTest(country=country, cookie=cookie):
+                client = app.test_client()
+                client.set_cookie(main.LANGUAGE_COOKIE, cookie)
+                with patch.object(main.COUNTRY_DETECTOR, 'country_for_request', return_value=country):
+                    html = client.get('/', headers={'Accept-Language': 'ru-RU'}).get_data(as_text=True)
+                self.assertEqual(self.language_of(html), expected)
+
     def test_detection_rules(self):
         cases = {'uk': 'uk', 'uk-UA,uk;q=0.9,en;q=0.8': 'uk', 'ru': 'ru', 'ru-BY,ru;q=0.9': 'ru', 'ru-KZ': 'ru',
                  'en-GB': 'en', 'de-DE,de;q=0.9': 'en', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
                  # the best-rated language wins, whatever the order it is written in
                  'en;q=0.4, uk;q=0.9': 'uk',
                  # the first preference decides: a German browser gets English even if Ukrainian comes second
-                 'de-DE,uk;q=0.9': 'en'}
+                 'de-DE,uk;q=0.9': 'en', 'uk;q=0': 'en', 'ru;q=0': 'en'}
         for accept, expected in cases.items():
             with self.subTest(accept=accept):
                 self.assertEqual(self.language_of(self.page(accept=accept)[1]), expected)
@@ -173,8 +203,13 @@ class LanguageTests(unittest.TestCase):
                 self.assertEqual(self.language_of(self.page(accept='de-DE', cookie=cookie)[1]), cookie)
         self.assertEqual(self.language_of(self.page(accept='uk-UA', cookie='en')[1]), 'en')
 
-    def test_an_unknown_saved_value_falls_back_to_the_browser(self):
-        self.assertEqual(self.language_of(self.page(accept='ru-RU', cookie='fr')[1]), 'ru')
+    def test_an_unknown_saved_value_is_ignored(self):
+        self.assertEqual(self.language_of(self.page(accept='de-DE', cookie='fr', country='UA')[1]), 'uk')
+        client = app.test_client()
+        client.set_cookie(main.LANGUAGE_COOKIE, '%not-a-language')
+        with patch.object(main.COUNTRY_DETECTOR, 'country_for_request', return_value=None):
+            html = client.get('/', headers={'Accept-Language': 'ru-RU'}).get_data(as_text=True)
+        self.assertEqual(self.language_of(html), 'ru')
 
     def test_the_legal_pages_follow_the_same_rules(self):
         for path, marker in (('/privacy', 'Політика конфіденційності'), ('/terms', 'Користувацька угода')):
@@ -187,6 +222,7 @@ class LanguageTests(unittest.TestCase):
         response = self.page(accept='uk-UA')[0]
         self.assertIn('Accept-Language', response.headers['Vary'])
         self.assertIn('Cookie', response.headers['Vary'])
+        self.assertIn('private', response.headers['Cache-Control'])
 
     def test_the_page_carries_every_language_for_switching_without_a_reload(self):
         html = self.page(accept='en-US')[1]
@@ -203,6 +239,26 @@ class LanguageTests(unittest.TestCase):
         self.assertIn('saveChoice(lang)', script.split('function chooseLang(lang)', 1)[1].split('}', 1)[0])
         self.assertIn('old === "uk" || old === "ru"', script)
         self.assertNotIn('localStorage.setItem', script)
+
+
+class CountryDetectorTests(unittest.TestCase):
+    def test_untrusted_clients_cannot_spoof_x_forwarded_for(self):
+        detector = CountryDetector(trusted_proxy_cidrs='10.0.0.0/8')
+        with app.test_request_context('/', environ_base={'REMOTE_ADDR': '203.0.113.10'},
+                                      headers={'X-Forwarded-For': '8.8.8.8'}):
+            self.assertEqual(str(detector.client_ip(main.request)), '203.0.113.10')
+
+    def test_trusted_proxy_chain_reveals_the_client_from_right_to_left(self):
+        detector = CountryDetector(trusted_proxy_cidrs='10.0.0.0/8')
+        with app.test_request_context('/', environ_base={'REMOTE_ADDR': '10.0.0.3'},
+                                      headers={'X-Forwarded-For': '8.8.8.8, 10.0.0.2'}):
+            self.assertEqual(str(detector.client_ip(main.request)), '8.8.8.8')
+
+    def test_local_private_and_missing_database_are_safe_unknowns(self):
+        detector = CountryDetector(database_path=ROOT / 'missing.mmdb')
+        for value in ('127.0.0.1', '10.0.0.1', 'not-an-ip'):
+            with self.subTest(value=value), app.test_request_context('/', environ_base={'REMOTE_ADDR': value}):
+                self.assertIsNone(detector.country_for_request(main.request))
 
 
 class ContentTests(unittest.TestCase):
@@ -297,27 +353,47 @@ class ContentTests(unittest.TestCase):
         for path in ('/privacy', '/terms', '/'):
             self.assertIn(f'href="{path}"', html + self.html('/privacy', 'en'))
 
-    def test_the_telegram_link_is_the_real_channel(self):
-        for path in ('/', '/privacy', '/terms'):
-            html = self.html(path, 'en')
-            with self.subTest(path=path):
-                links = set(re.findall(r'href="(https://t\.me/[^"]*)"', html))
-                self.assertEqual(links, {'https://t.me/polyglotacademyofficial'})
+    CHANNEL = 'https://t.me/polyglotacademyofficial'
+    BOT = 'https://t.me/polyglotacademyofficial_bot'
+
+    def test_the_telegram_links_are_the_real_channel_and_bot(self):
+        """Only two Telegram addresses exist on the site, and both are spelled correctly."""
+        for path, expected in (('/', {self.CHANNEL, self.BOT}), ('/privacy', {self.CHANNEL}),
+                               ('/terms', {self.CHANNEL})):
+            for language in ('en', 'uk', 'ru'):
+                html = self.html(path, language)
+                with self.subTest(path=path, language=language):
+                    self.assertEqual(set(re.findall(r'href="(https://t\.me/[^"]*)"', html)), expected)
+                    self.assertNotIn('t.me/https', html, 'a link pasted inside a link')
+
+    def test_the_bot_is_offered_once_and_in_every_language(self):
+        """The bot belongs in Contacts - one line, not a button repeated in every section."""
+        for language in ('en', 'uk', 'ru'):
+            html = self.html('/', language)
+            with self.subTest(language=language):
+                self.assertEqual(html.count(f'href="{self.BOT}"'), 1)
+                contacts = html.split('id="contacts"', 1)[1].split('</section>', 1)[0]
+                self.assertIn(f'href="{self.BOT}"', contacts)
+                self.assertIn('@polyglotacademyofficial_bot', contacts)
 
 
 class FaviconTests(unittest.TestCase):
-    """The small icon is its own simple mark - one letter - not the detailed emblem shrunk to a blur."""
+    """The icons: the sizes browsers ask for, all of them cut from the one supplied artwork."""
     ICONS = ROOT / 'static' / 'icons'
+    # The two artworks delivered by the owner: the shield emblem for the header, the owl's head for
+    # the icons. brand/make_icons.py builds everything from them - nothing is drawn by hand.
+    # Replacing an artwork means replacing its checksum in the same commit.
+    ARTWORK = {'icon_own.png': 'bff0587fde3be4dd70173b5adddee52942d689227bfb48e95c9d4f0a2911be34',
+               'own_book.png': 'e0eb0aeddcf75601281cb7a8587b6205f2cb5d7bac8a63db10b15e6713de1e72'}
 
-    def test_the_svg_favicon_is_a_simple_mark(self):
-        svg = (self.ICONS / 'favicon.svg').read_text(encoding='utf-8')
-        self.assertTrue(svg.startswith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">'))
-        self.assertEqual(svg.count('<path'), 1, 'one shape on a tile - readable at 16 px')
-        self.assertLess(len(svg), 2000)
-        client = app.test_client()
-        response = client.get('/static/icons/favicon.svg')
-        self.assertEqual(response.mimetype, 'image/svg+xml')
-        response.close()
+    def test_the_icons_are_built_from_the_supplied_artwork(self):
+        for name, checksum in self.ARTWORK.items():
+            source = ROOT / 'brand' / name
+            with self.subTest(name=name):
+                self.assertTrue(source.is_file(), 'a source of truth for the icons is missing')
+                self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(), checksum,
+                                 'the artwork changed: rerun brand/make_icons.py and update this checksum')
+        self.assertTrue((ROOT / 'brand' / 'make_icons.py').is_file())
 
     def test_the_png_and_ico_sizes(self):
         for name, size in (('favicon-16x16.png', 16), ('favicon-32x32.png', 32)):

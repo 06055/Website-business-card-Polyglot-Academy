@@ -1,3 +1,4 @@
 Flask==3.1.0
+maxminddb==3.2.0
 # Production WSGI server (the Flask development server is never used on the VPS).
 gunicorn==23.0.0

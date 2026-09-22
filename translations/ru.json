@@ -92,6 +92,7 @@
     "contacts_h2": "Контакты",
     "contacts_tg_h3": "Telegram",
     "contacts_tg_html": "Канал: <a href=\"https://t.me/polyglotacademyofficial\" target=\"_blank\" rel=\"noopener\">@polyglotacademyofficial</a>",
+    "contacts_bot_html": "Бот: <a href=\"https://t.me/polyglotacademyofficial_bot\" target=\"_blank\" rel=\"noopener\">@polyglotacademyofficial_bot</a>",
     "contacts_tg_btn": "Открыть Telegram",
     "contacts_other_h3": "Электронная почта",
     "contacts_other_html": "Пишите нам: <a href=\"mailto:polyglotacademyofficial@gmail.com\">polyglotacademyofficial@gmail.com</a>"

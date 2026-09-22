@@ -5,6 +5,8 @@ from pathlib import Path
 
 from flask import Flask, jsonify, make_response, render_template, request, send_from_directory
 
+from geo import CountryDetector
+
 app = Flask(__name__)
 
 ROOT = Path(__file__).resolve().parent
@@ -14,6 +16,8 @@ LANGUAGES = ("en", "uk", "ru")
 DEFAULT_LANGUAGE = "en"
 # Set only when a visitor picks a language by hand (static/site.js); the server reads it first.
 LANGUAGE_COOKIE = "polyglot_lang"
+# Bumped whenever the icons change: browsers keep a favicon far longer than any other file.
+FAVICON_VERSION = "owl-icon-20260922-v7"
 LANGUAGE_META = {
     "en": {"label": "EN", "flag": "fi-us", "name": "English"},
     "uk": {"label": "UA", "flag": "fi-ua", "name": "Українська"},
@@ -28,6 +32,7 @@ def load_translations():
 
 
 TRANSLATIONS = load_translations()
+COUNTRY_DETECTOR = CountryDetector.from_environment()
 
 
 def detect_language(accept_languages):
@@ -37,6 +42,8 @@ def detect_language(accept_languages):
     language tags / (tag, quality) pairs.
     """
     for item in accept_languages:
+        if isinstance(item, tuple) and item[1] <= 0:
+            continue
         tag = item[0] if isinstance(item, tuple) else item
         primary = str(tag).strip().lower().replace("_", "-").split("-")[0]
         return primary if primary in ("uk", "ru") else DEFAULT_LANGUAGE
@@ -44,10 +51,17 @@ def detect_language(accept_languages):
 
 
 def choose_language(req):
-    """A language picked by hand, then the browser's language, then English."""
+    """A manual choice, then IP country, then the browser language, then English."""
     chosen = req.cookies.get(LANGUAGE_COOKIE, "")
     if chosen in LANGUAGES:
         return chosen
+    country = COUNTRY_DETECTOR.country_for_request(req)
+    if country == "UA":
+        return "uk"
+    if country == "RU":
+        return "ru"
+    if country:
+        return DEFAULT_LANGUAGE
     return detect_language(req.accept_languages)
 
 
@@ -68,11 +82,15 @@ def render_page(template, section):
         i18n={code: texts_for(code, section) for code in LANGUAGES},
         languages=LANGUAGE_META,
         language_cookie=LANGUAGE_COOKIE,
+        favicon_version=FAVICON_VERSION,
         year=datetime.date.today().year,
     ))
     # The same URL answers in different languages: any cache in between must keep them apart.
     response.headers["Vary"] = "Accept-Language, Cookie"
     response.headers["Content-Language"] = language
+    # Country is derived from the connection rather than a request header, so shared caches must not
+    # reuse one visitor's first-visit language for another visitor.
+    response.cache_control.private = True
     return response
 
 
@@ -94,7 +112,11 @@ def terms():
 @app.route("/favicon.ico")
 def favicon():
     """Browsers and search engines ask for /favicon.ico at the root whatever the <link> says."""
-    return send_from_directory(app.static_folder, "icons/favicon.ico", mimetype="image/vnd.microsoft.icon")
+    response = send_from_directory(
+        app.static_folder, "icons/favicon.ico", mimetype="image/vnd.microsoft.icon", max_age=0
+    )
+    response.cache_control.no_cache = True
+    return response
 
 
 @app.route("/health")

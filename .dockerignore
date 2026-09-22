@@ -7,6 +7,8 @@ venv/
 __pycache__/
 *.pyc
 *.log
+*.mmdb
 .vscode/
 .idea/
 DEPLOYMENT.md
+brand/
