@@ -153,7 +153,68 @@
       if (!target) return;
       e.preventDefault();
       setMenu(false);
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      var prefersLessMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var behavior = prefersLessMotion ? "auto" : "smooth";
+      var isMobile = window.matchMedia && window.matchMedia("(max-width: 980px)").matches;
+      var sectionTitle = isMobile && target.querySelector && target.querySelector(".section-title");
+      if (sectionTitle) {
+        var header = document.querySelector(".header");
+        var headerHeight = header ? header.getBoundingClientRect().height : 72;
+        window.scrollTo({
+          top: window.scrollY + sectionTitle.getBoundingClientRect().top - headerHeight - 26,
+          behavior: behavior
+        });
+      } else {
+        target.scrollIntoView({ behavior: behavior, block: "start" });
+      }
     });
   });
+
+  // Keep the vertical travelling light between the A1 and C1 marker centers as text wraps or changes language.
+  var levelTrack = document.querySelector && document.querySelector(".levels__track");
+  var c1Code = levelTrack && levelTrack.querySelector(".level--c1 .level__code");
+  if (c1Code) {
+    var setLevelShimmerEnd = function () {
+      var trackBottom = levelTrack.getBoundingClientRect().bottom;
+      var c1Rect = c1Code.getBoundingClientRect();
+      levelTrack.style.setProperty("--level-shimmer-tail", (trackBottom - c1Rect.top - c1Rect.height / 2) + "px");
+    };
+    setLevelShimmerEnd();
+    if ("ResizeObserver" in window) {
+      var levelObserver = new window.ResizeObserver(setLevelShimmerEnd);
+      levelObserver.observe(levelTrack);
+    } else {
+      window.addEventListener("resize", setLevelShimmerEnd);
+    }
+  }
+
+  // Reveal lower-page content once. Without IntersectionObserver or with reduced motion, it stays visible.
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    var revealItems = document.querySelectorAll(
+      "#about .section-title, #about .card, #program .section-title, #program .levels, " +
+      "#program .grid > .card, #reviews .section-title, #reviews .review-card, " +
+      "#contacts .section-title, #contacts .card"
+    );
+    if (revealItems.length) {
+      var revealObserver = new window.IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.08, rootMargin: "0px 0px -32px 0px" });
+
+      revealItems.forEach(function (item) {
+        item.classList.add("reveal");
+        // Keep anything already in view visible when loading or refreshing mid-page.
+        if (item.getBoundingClientRect().top < window.innerHeight - 32) {
+          item.classList.add("is-visible");
+        } else {
+          revealObserver.observe(item);
+        }
+      });
+      root.classList.add("motion-ready");
+    }
+  }
 })();

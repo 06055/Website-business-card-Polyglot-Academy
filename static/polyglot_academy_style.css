@@ -6,7 +6,7 @@
     --stroke: rgba(255,255,255,.12);
     --accent: #c9413a; 
     --accent2:#e05b54;
-    --shadow: 0 18px 60px rgba(0,0,0,.35);
+    --shadow: 0 10px 28px rgba(0,0,0,.18);
     --radius: 18px;
     --max: 1100px;
     --headerH: 72px;
@@ -289,6 +289,31 @@ section{
     border-radius: var(--radius);
     padding: 18px;
     box-shadow: var(--shadow);
+    transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+
+/* Small entrance motion is enabled only after JS has attached the observer. */
+.motion-ready .reveal{
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .56s ease, transform .56s cubic-bezier(.2,.65,.25,1), border-color .28s ease, box-shadow .28s ease;
+}
+.motion-ready .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+.motion-ready :is(#about, #program, #reviews, #contacts) .grid > .reveal:nth-child(2),
+.motion-ready .reviews__grid > .reveal:nth-child(3n + 2){ transition-delay: 70ms; }
+.motion-ready :is(#about, #program, #reviews, #contacts) .grid > .reveal:nth-child(3),
+.motion-ready .reviews__grid > .reveal:nth-child(3n){ transition-delay: 140ms; }
+
+@media (hover: hover) and (pointer: fine){
+    :is(#about, #program, #reviews, #contacts) .card:not(.levels):hover{
+        transform: translateY(-3px);
+        border-color: rgba(255,190,130,.27);
+        box-shadow: 0 14px 32px rgba(0,0,0,.24);
+    }
+    .review-card:hover::before{
+        transform: scaleX(1.25);
+        box-shadow: none;
+    }
 }
 .card h3{ margin:0 0 6px; font-size: 16px; }
 .card p{ margin:0; color: var(--muted); font-size: 14px; line-height:1.45; }
@@ -348,11 +373,35 @@ footer{
     position: absolute;
     left: 10%; right: 10%; top: 23px;
     height: 2px;
-    background: linear-gradient(90deg, rgba(90,162,255,.55), rgba(255,163,92,.55));
+    background: linear-gradient(90deg, #5a9bd5 0%, #7f9ec7 25%, #ada5ae 50%, #cfaa85 75%, #dda96f 100%);
     border-radius: 2px;
+}
+.levels__track::after{
+    content: "";
+    position: absolute;
+    left: 10%; right: 10%; top: 22px;
+    height: 4px;
+    overflow: hidden;
+    background: linear-gradient(90deg, transparent, rgba(130,188,238,.52) 20%, rgba(235,221,194,.78) 50%, rgba(239,188,117,.64) 78%, transparent) -16% center / 24% 100% no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    animation: level-glimmer 9s linear infinite;
+}
+@keyframes level-glimmer{
+    0%, 12%{ background-position: -16% center; opacity: 0; }
+    18%{ opacity: .9; }
+    68%{ background-position: 108% center; opacity: .9; }
+    73%, 100%{ background-position: 116% center; opacity: 0; }
+}
+@keyframes level-glimmer-vertical{
+    0%, 12%{ background-position: center -16%; opacity: 0; }
+    18%{ opacity: .9; }
+    68%{ background-position: center 108%; opacity: .9; }
+    73%, 100%{ background-position: center 116%; opacity: 0; }
 }
 .level{
     position: relative;
+    z-index: 1;
     display: grid;
     align-content: start;
     gap: 6px;
@@ -371,19 +420,51 @@ footer{
     color: #fff;
     background: #0b1d33;
     border: 1px solid rgba(143,186,255,.35);
-    box-shadow: 0 8px 22px rgba(0,0,0,.35);
+    box-shadow: 0 4px 12px rgba(0,0,0,.20);
     margin: 0 auto 6px;
+    transition: border-color .28s ease, box-shadow .28s ease, transform .28s ease;
 }
-.level--b1 .level__code{ border-color: rgba(200,190,255,.40); }
-.level--b2 .level__code{ border-color: rgba(255,190,140,.40); }
+.level--a2 .level__code{ border-color: #7f9ec7; background: #10253c; }
+.level--b1 .level__code{ border-color: #ada5ae; background: #18273b; }
+.level--b2 .level__code{ border-color: #cfaa85; background: #222839; }
 .level--c1 .level__code{
-    border-color: rgba(255,163,92,.60);
-    background: linear-gradient(180deg, rgba(255,163,92,.22), #0b1d33);
-    box-shadow: 0 0 0 4px rgba(255,163,92,.08), 0 8px 22px rgba(0,0,0,.35);
+    border-color: #e9bc82;
+    background: linear-gradient(160deg, #71543b, #302d36 72%);
+    box-shadow: 0 4px 12px rgba(0,0,0,.22);
 }
 .level__name{ font-weight: 700; font-size: 14px; color: #fff; }
 .level__desc{ margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
 .levels__note{ margin: 16px 0 0 !important; font-size: 13px !important; color: rgba(234,242,255,.62) !important; }
+@media (hover: hover) and (pointer: fine){
+    .level:hover .level__code{
+        transform: translateY(-2px);
+        border-color: #e9bc82;
+        box-shadow: 0 7px 17px rgba(0,0,0,.26);
+    }
+}
+
+/* Only the outer glow changes opacity; the Telegram buttons keep their size. */
+:is(.hero__cta, .card--cta, #contacts) .btn--accent,
+.mobile__cta{ position: relative; }
+:is(.hero__cta, .card--cta, #contacts) .btn--accent::before,
+.mobile__cta::before{
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: inherit;
+    box-shadow: 0 0 18px 3px rgba(224,91,84,.33);
+    opacity: 0;
+    pointer-events: none;
+    animation: telegram-glow 9s ease-in-out infinite;
+}
+@keyframes telegram-glow{
+    0%, 9%, 27%, 100%{ opacity: 0; }
+    18%{ opacity: .7; }
+}
+@media (hover: hover) and (pointer: fine){
+    :is(.hero__cta, .card--cta, #contacts) .btn--accent:hover::before,
+    .mobile__cta:hover::before{ animation: none; opacity: .75; }
+}
 
 /* ------------------------------------------------------------------ reviews */
 .reviews__grid{
@@ -404,6 +485,8 @@ footer{
     margin-bottom: 18px;
     border-radius: 2px;
     background: rgba(255,163,92,.75);
+    transform-origin: left center;
+    transition: transform .3s ease, box-shadow .3s ease;
 }
 .review-card .review-card__quote{
     color: rgba(234,242,255,.88);
@@ -415,6 +498,24 @@ footer{
 }
 .review-card__author h3{ margin: 0 0 2px; font-size: 14px; }
 .review-card__author p{ color: rgba(234,242,255,.56); font-size: 12px; }
+
+/* One faint moving light in the lower page, behind the reviews. */
+#reviews{ position: relative; isolation: isolate; overflow: hidden; }
+#reviews::before{
+    content: "";
+    position: absolute;
+    inset: -20% -10%;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 42% 55% at 70% 50%, rgba(226,179,108,.06), transparent 72%);
+    opacity: .4;
+    animation: ambient-drift 18s ease-in-out infinite alternate;
+}
+#reviews > .container{ position: relative; z-index: 1; }
+@keyframes ambient-drift{
+    from{ transform: translate3d(-3%,0,0); }
+    to{ transform: translate3d(3%,0,0); }
+}
 
 .card--cta{
     display: flex;
@@ -445,15 +546,28 @@ footer{
        ends exactly at C1 however long the descriptions are */
     .levels__track{ grid-template-columns: 1fr; gap: 14px; }
     .levels__track::before{ display: none; }
+    .levels__track::after{
+        left: 24px; right: auto; top: 24px; bottom: var(--level-shimmer-tail, 100%);
+        width: 4px; height: auto;
+        z-index: 2;
+        background-image: linear-gradient(180deg, transparent, rgba(130,188,238,.52) 20%, rgba(235,221,194,.78) 50%, rgba(239,188,117,.64) 78%, transparent);
+        background-position: center -16%;
+        background-size: 100% 24%;
+        animation-name: level-glimmer-vertical;
+    }
     .level:not(:last-child)::after{
         content: "";
         position: absolute;
-        left: 23px; top: 48px; bottom: -14px;
+        left: 25px; top: 48px; bottom: -14px;
         width: 2px;
-        background: rgba(120,170,255,.45);
+        z-index: 1;
+        background: #779cc7;
     }
-    .level--b2::after{ background: linear-gradient(180deg, rgba(120,170,255,.45), rgba(255,163,92,.55)) !important; }
+    .level--a2::after{ background: #9da1ba; }
+    .level--b1::after{ background: #c0a69c; }
+    .level--b2::after{ background: #d8ac79; }
     .level{
+        z-index: auto;
         grid-template-columns: 48px 1fr;
         column-gap: 14px;
         row-gap: 2px;
@@ -461,13 +575,13 @@ footer{
         padding: 0 2px;
         text-align: left;
     }
-    .level__code{ grid-row: span 2; margin: 0; }
+    .level__code{ position: relative; z-index: 3; grid-row: span 2; margin: 0; }
     .level__name{ align-self: end; padding-top: 4px; }
     .level__desc{ grid-column: 2; }
 
     .hero{ align-items: flex-start; }
     .hero__inner{ padding-top: 44px; }
-    .hero__bg{ background-position: 62% center; }
+    .hero__bg{ background-position: 84% center; }
     .hero::before{
         background: linear-gradient(180deg, rgba(4,19,46,.72) 0%, rgba(4,19,46,.60) 55%, rgba(4,19,46,.30) 100%);
     }
@@ -476,8 +590,20 @@ footer{
 /* phones: only the brand and the menu button stay in the bar; language and Telegram are in the menu */
 @media (max-width: 599px){
     .reviews__grid{ grid-template-columns: minmax(0, 1fr); }
+    #reviews::before{ opacity: .28; }
+    #contacts{ min-height: calc(100svh - var(--headerH)); }
     .header__right .langdd{ display:none; }
     .hero__inner{ padding-top: 40px; }
+    .hero__bg{
+        background-color: #04132e;
+        background-size: auto 60%;
+        background-position: 96% calc(100% + 26px);
+        filter: brightness(1.25);
+        mask-image: linear-gradient(180deg, transparent 34%, #000 53%);
+    }
+    .hero::before{
+        background: linear-gradient(180deg, rgba(4,19,46,.76) 0%, rgba(4,19,46,.61) 36%, rgba(4,19,46,.21) 72%, rgba(4,19,46,.14) 100%);
+    }
     .btn--lg{ height: 46px; padding: 0 18px; }
 }
 
@@ -757,4 +883,23 @@ body.legal{ padding: 24px 16px 56px; min-height: 100%; }
 @media (max-width: 599px){
     .legal__box{ padding: 22px 18px; }
     .legal h1{ font-size: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .motion-ready .reveal,
+    .motion-ready .reveal.is-visible{ opacity: 1; transform: none; transition: none; }
+    .levels__track::after,
+    :is(.hero__cta, .card--cta, #contacts) .btn--accent::before,
+    .mobile__cta::before{ animation: none; opacity: 0; }
+    #reviews::before{ animation: none; opacity: 0; transform: none; }
+    :is(#about, #program, #reviews, #contacts) .card,
+    .level__code,
+    .review-card::before,
+    .btn,
+    .legal__back{ transition: none; }
+    :is(#about, #program, #reviews, #contacts) .card:not(.levels):hover,
+    .level:hover .level__code,
+    .legal__back:hover,
+    .btn:active{ transform: none; }
+    .review-card:hover::before{ transform: none; box-shadow: none; }
 }
