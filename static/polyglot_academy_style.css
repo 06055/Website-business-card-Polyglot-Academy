@@ -337,18 +337,16 @@ footer{
 .levels__track{
     position: relative;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: none;
 }
-/* the line that joins the steps */
+/* The line starts and ends at the centers of the first and last markers. */
 .levels__track::before{
     content: "";
     position: absolute;
-    left: 24px; right: 24px; top: 23px;
+    left: 10%; right: 10%; top: 23px;
     height: 2px;
     background: linear-gradient(90deg, rgba(90,162,255,.55), rgba(255,163,92,.55));
     border-radius: 2px;
@@ -358,7 +356,9 @@ footer{
     display: grid;
     align-content: start;
     gap: 6px;
-    padding: 0 2px;
+    min-width: 0;
+    padding: 0 10px;
+    text-align: center;
 }
 .level__code{
     display: grid;
@@ -372,17 +372,49 @@ footer{
     background: #0b1d33;
     border: 1px solid rgba(143,186,255,.35);
     box-shadow: 0 8px 22px rgba(0,0,0,.35);
-    margin-bottom: 6px;
+    margin: 0 auto 6px;
 }
 .level--b1 .level__code{ border-color: rgba(200,190,255,.40); }
 .level--b2 .level__code{ border-color: rgba(255,190,140,.40); }
 .level--c1 .level__code{
     border-color: rgba(255,163,92,.60);
     background: linear-gradient(180deg, rgba(255,163,92,.22), #0b1d33);
+    box-shadow: 0 0 0 4px rgba(255,163,92,.08), 0 8px 22px rgba(0,0,0,.35);
 }
 .level__name{ font-weight: 700; font-size: 14px; color: #fff; }
 .level__desc{ margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
 .levels__note{ margin: 16px 0 0 !important; font-size: 13px !important; color: rgba(234,242,255,.62) !important; }
+
+/* ------------------------------------------------------------------ reviews */
+.reviews__grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 14px;
+}
+.review-card{
+    min-width: 0;
+    padding: 22px;
+}
+.review-card::before{
+    content: "";
+    display: block;
+    width: 26px;
+    height: 2px;
+    margin-bottom: 18px;
+    border-radius: 2px;
+    background: rgba(255,163,92,.75);
+}
+.review-card .review-card__quote{
+    color: rgba(234,242,255,.88);
+    line-height: 1.6;
+    overflow-wrap: break-word;
+}
+.review-card__author{
+    margin-top: 22px;
+}
+.review-card__author h3{ margin: 0 0 2px; font-size: 14px; }
+.review-card__author p{ color: rgba(234,242,255,.56); font-size: 12px; }
 
 .card--cta{
     display: flex;
@@ -407,6 +439,7 @@ footer{
     .col-4{ grid-column: span 12; }
     .col-6{ grid-column: span 12; }
     .col-8{ grid-column: span 12; }
+    .reviews__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
     /* the roadmap turns into a vertical timeline: one segment from each step to the next, so the line
        ends exactly at C1 however long the descriptions are */
@@ -425,8 +458,10 @@ footer{
         column-gap: 14px;
         row-gap: 2px;
         align-items: start;
+        padding: 0 2px;
+        text-align: left;
     }
-    .level__code{ grid-row: span 2; margin-bottom: 0; }
+    .level__code{ grid-row: span 2; margin: 0; }
     .level__name{ align-self: end; padding-top: 4px; }
     .level__desc{ grid-column: 2; }
 
@@ -440,6 +475,7 @@ footer{
 
 /* phones: only the brand and the menu button stay in the bar; language and Telegram are in the menu */
 @media (max-width: 599px){
+    .reviews__grid{ grid-template-columns: minmax(0, 1fr); }
     .header__right .langdd{ display:none; }
     .hero__inner{ padding-top: 40px; }
     .btn--lg{ height: 46px; padding: 0 18px; }

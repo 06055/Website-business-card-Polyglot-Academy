@@ -203,12 +203,15 @@
       <h2 data-i18n="reviews_h2">{{ t.reviews_h2 }}</h2>
     </div>
 
-    <div class="grid">
-      {% for n in (1, 2, 3) %}
-      <div class="card col-4">
-        <h3 data-i18n="reviews_card{{ n }}_h3">{{ t['reviews_card' ~ n ~ '_h3'] }}</h3>
-        <p data-i18n="reviews_card{{ n }}_p">{{ t['reviews_card' ~ n ~ '_p'] }}</p>
-      </div>
+    <div class="reviews__grid">
+      {% for n in (1, 2, 3, 4, 5, 6) %}
+      <article class="card review-card">
+        <p class="review-card__quote" data-i18n="reviews_card{{ n }}_p">{{ t['reviews_card' ~ n ~ '_p'] }}</p>
+        <div class="review-card__author">
+          <h3 data-i18n="reviews_card{{ n }}_h3">{{ t['reviews_card' ~ n ~ '_h3'] }}</h3>
+          <p data-i18n="reviews_card{{ n }}_role">{{ t['reviews_card' ~ n ~ '_role'] }}</p>
+        </div>
+      </article>
       {% endfor %}
     </div>
   </div>

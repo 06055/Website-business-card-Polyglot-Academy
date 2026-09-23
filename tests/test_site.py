@@ -3,6 +3,7 @@
     python -m unittest discover -s tests -v
 """
 import hashlib
+from html import unescape
 import json
 import os
 import re
@@ -327,6 +328,19 @@ class ContentTests(unittest.TestCase):
                 self.assertEqual(tuple(home[f'level_{code.lower()}_name'] for code in self.LEVELS), expected)
                 for code in self.LEVELS:
                     self.assertGreater(len(home[f'level_{code.lower()}_p']), 40)
+
+    def test_six_reviews_render_with_localized_names_text_and_roles(self):
+        for language in main.LANGUAGES:
+            html = self.html('/', language)
+            reviews = unescape(html.split('<section id="reviews">', 1)[1].split('</section>', 1)[0])
+            home = main.TRANSLATIONS[language]['home']
+            with self.subTest(language=language):
+                self.assertEqual(reviews.count('class="card review-card"'), 6)
+                for n in range(1, 7):
+                    for suffix in ('h3', 'p', 'role'):
+                        key = f'reviews_card{n}_{suffix}'
+                        self.assertIn(f'data-i18n="{key}"', reviews)
+                        self.assertIn(home[key], reviews)
 
     def test_no_promise_of_a_result_in_a_number_of_days(self):
         for language in main.LANGUAGES:
