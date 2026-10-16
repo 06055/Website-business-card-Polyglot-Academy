@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="{{ lang }}" data-lang-cookie="{{ language_cookie }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title data-i18n="meta_title">{{ t.meta_title }}</title>
+{% include "_icons.html" %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='polyglot_academy_style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/css/flag-icons.min.css" />
+</head>
+
+<body class="legal">
+
+{% include "_legal_top.html" %}
+
+  <main class="legal__box">
+    <h1 data-i18n="rules_h1">{{ t.rules_h1 }}</h1>
+    <p data-i18n="rules_intro">{{ t.rules_intro }}</p>
+
+    <h2 data-i18n="rules_1_h2">{{ t.rules_1_h2 }}</h2>
+    <p data-i18n="rules_1_p">{{ t.rules_1_p }}</p>
+
+    <h2 data-i18n="rules_2_h2">{{ t.rules_2_h2 }}</h2>
+    <ul>
+      <li data-i18n="rules_2_li1">{{ t.rules_2_li1 }}</li>
+      <li data-i18n="rules_2_li2">{{ t.rules_2_li2 }}</li>
+      <li data-i18n="rules_2_li3">{{ t.rules_2_li3 }}</li>
+    </ul>
+
+    {% for n in (3, 4, 5) %}
+    <h2 data-i18n="rules_{{ n }}_h2">{{ t['rules_' ~ n ~ '_h2'] }}</h2>
+    <p data-i18n="rules_{{ n }}_p">{{ t['rules_' ~ n ~ '_p'] }}</p>
+    {% endfor %}
+
+    <h2 data-i18n="rules_6_h2">{{ t.rules_6_h2 }}</h2>
+    <ul>
+      <li data-i18n="rules_6_li1">{{ t.rules_6_li1 }}</li>
+      <li data-i18n="rules_6_li2">{{ t.rules_6_li2 }}</li>
+      <li data-i18n="rules_6_li3">{{ t.rules_6_li3 }}</li>
+      <li data-i18n="rules_6_li4">{{ t.rules_6_li4 }}</li>
+    </ul>
+
+    {% for n in (7, 8, 9, 10, 11) %}
+    <h2 data-i18n="rules_{{ n }}_h2">{{ t['rules_' ~ n ~ '_h2'] }}</h2>
+    <p data-i18n="rules_{{ n }}_p">{{ t['rules_' ~ n ~ '_p'] }}</p>
+    {% endfor %}
+
+    <h2 data-i18n="rules_12_h2">{{ t.rules_12_h2 }}</h2>
+    <p data-i18n-html="rules_12_html">{{ t.rules_12_html|safe }}</p>
+
+    <div class="legal__date" data-i18n="rules_date">{{ t.rules_date }}</div>
+  </main>
+
+<script type="application/json" id="i18n-data">{{ i18n|tojson }}</script>
+<script src="{{ url_for('static', filename='site.js') }}" defer></script>
+</body>
+</html>

@@ -109,6 +109,13 @@ def terms():
     return render_page("terms.html", "terms")
 
 
+@app.route("/rules")
+def rules():
+    """The Academy's rules for students in short: prices, booking, payment, cancelling, refunds (stage 6 of the
+    Academy's roadmap; the full text lives in the Student repository, docs/ACADEMY_RULES_DRAFT.md)."""
+    return render_page("rules.html", "rules")
+
+
 @app.route("/favicon.ico")
 def favicon():
     """Browsers and search engines ask for /favicon.ico at the root whatever the <link> says."""

@@ -28,7 +28,7 @@ class PagesTests(unittest.TestCase):
         self.client = app.test_client()
 
     def test_every_page_answers(self):
-        for path in ('/', '/privacy', '/terms'):
+        for path in ('/', '/privacy', '/terms', '/rules'):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)
@@ -60,7 +60,7 @@ class BrandAssetsTests(unittest.TestCase):
     ICONS = ('favicon.ico', 'favicon-16x16.png', 'favicon-32x32.png', 'apple-touch-icon.png',
              'android-chrome-192x192.png', 'android-chrome-512x512.png', 'site.webmanifest',
              'polyglot-owl-logo.png')
-    PAGES = ('/', '/privacy', '/terms')
+    PAGES = ('/', '/privacy', '/terms', '/rules')
 
     def setUp(self):
         app.config.update(TESTING=True)
@@ -287,7 +287,7 @@ class ContentTests(unittest.TestCase):
 
     def test_every_key_a_template_uses_exists(self):
         for template, section in (('polyglot_academy.html', 'home'), ('privacy.html', 'privacy'),
-                                  ('terms.html', 'terms'), ('_legal_top.html', 'common')):
+                                  ('terms.html', 'terms'), ('rules.html', 'rules'), ('_legal_top.html', 'common')):
             text = (ROOT / 'templates' / template).read_text(encoding='utf-8')
             keys = set(re.findall(r'data-i18n(?:-html)?="([a-z0-9_]+)"', text))
             keys |= set(re.findall(r'data-i18n-attr="[a-z-]+:([a-z0-9_]+)"', text))
@@ -298,7 +298,7 @@ class ContentTests(unittest.TestCase):
 
     def test_no_placeholder_or_template_text_reaches_a_visitor(self):
         for language in main.LANGUAGES:
-            for path in ('/', '/privacy', '/terms'):
+            for path in ('/', '/privacy', '/terms', '/rules'):
                 html = self.html(path, language)
                 # the embedded JSON legitimately ends objects with "}}"; the markup must not
                 markup = re.sub(r'<script type="application/json" id="i18n-data">.*?</script>', '', html, flags=re.S)
@@ -364,7 +364,7 @@ class ContentTests(unittest.TestCase):
         for anchor in set(re.findall(r'href="#([^"]+)"', html)):
             with self.subTest(anchor=anchor):
                 self.assertIn(anchor, ids)
-        for path in ('/privacy', '/terms', '/'):
+        for path in ('/privacy', '/terms', '/rules', '/'):
             self.assertIn(f'href="{path}"', html + self.html('/privacy', 'en'))
 
     CHANNEL = 'https://t.me/polyglotacademyofficial'
@@ -373,7 +373,7 @@ class ContentTests(unittest.TestCase):
     def test_the_telegram_links_are_the_real_channel_and_bot(self):
         """Only two Telegram addresses exist on the site, and both are spelled correctly."""
         for path, expected in (('/', {self.CHANNEL, self.BOT}), ('/privacy', {self.CHANNEL}),
-                               ('/terms', {self.CHANNEL})):
+                               ('/terms', {self.CHANNEL}), ('/rules', {self.CHANNEL, self.BOT})):
             for language in ('en', 'uk', 'ru'):
                 html = self.html(path, language)
                 with self.subTest(path=path, language=language):
@@ -389,6 +389,81 @@ class ContentTests(unittest.TestCase):
                 contacts = html.split('id="contacts"', 1)[1].split('</section>', 1)[0]
                 self.assertIn(f'href="{self.BOT}"', contacts)
                 self.assertIn('@polyglotacademyofficial_bot', contacts)
+
+
+class AcademyRulesTests(unittest.TestCase):
+    """Stage 6 of the Academy: the owner's prices, how payment really works, the rules in short - and no claim of
+    official acquiring or a registered business that does not exist yet."""
+
+    def setUp(self):
+        app.config.update(TESTING=True)
+        self.client = app.test_client()
+
+    def html(self, path, language):
+        self.client.set_cookie(main.LANGUAGE_COOKIE, language)
+        return unescape(self.client.get(path).get_data(as_text=True))
+
+    def test_the_prices_are_the_owners_on_the_home_page_the_rules_and_the_terms(self):
+        for language in main.LANGUAGES:
+            with self.subTest(language=language):
+                home = self.html('/', language).split('id="prices"', 1)[1].split('card--cta', 1)[0]
+                self.assertIn('10 USD', home)
+                self.assertIn('5 USD', home)
+                self.assertIn('href="/rules"', home)
+                for path in ('/rules', '/terms'):
+                    page = self.html(path, language)
+                    self.assertIn('10 USD', page)
+                    self.assertIn('5 USD', page)
+
+    def test_payment_is_a_card_transfer_in_hryvnias_at_the_nbu_rate_confirmed_by_the_teacher(self):
+        words = {'en': ('hryvnias', 'NBU', 'card transfer', 'I have paid'),
+                 'uk': ('гривнях', 'НБУ', 'переказом на картку', 'Я оплатив'),
+                 'ru': ('гривнах', 'НБУ', 'переводом на карту', 'Я оплатил')}
+        for language, expected in words.items():
+            texts = main.TRANSLATIONS[language]
+            with self.subTest(language=language):
+                for word in expected:
+                    self.assertIn(word, texts['home']['pricing_p'] + texts['rules']['rules_4_p']
+                                  + texts['rules']['rules_2_li3'])
+
+    def test_the_rules_say_the_terms_the_academy_works_by(self):
+        expected = {'en': ('6 hours', 'an hour before', '7 calendar days', '5 business days', '25%', '5 minutes', '24 hours'),
+                    'uk': ('6 годин', 'за годину', '7 календарних днів', '5 робочих днів', '25 %', '5 хвилин', '24 години'),
+                    'ru': ('6 часов', 'за час', '7 календарных дней', '5 рабочих дней', '25 %', '5 минут', '24 часа')}
+        for language, parts in expected.items():
+            page = self.html('/rules', language)
+            with self.subTest(language=language):
+                for part in parts:
+                    self.assertIn(part, page)
+                self.assertEqual(page.count('<h2 data-i18n="rules_'), 12)
+
+    def test_no_claim_of_official_acquiring_or_a_registered_business(self):
+        for language in main.LANGUAGES:
+            text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False).lower()
+            with self.subTest(language=language):
+                for claim in ('acquiring', 'еквайринг', 'эквайринг', 'фоп', 'fop', 'liqpay', 'wayforpay', 'fondy',
+                              'visa', 'mastercard', 'apple pay', 'google pay'):
+                    self.assertNotIn(claim, text)
+
+    def test_the_privacy_policy_names_who_receives_data_and_keeps_no_card_numbers(self):
+        expected = {'en': ('8x8', 'Telegram', 'card numbers', 'cookie'),
+                    'uk': ('8x8', 'Telegram', 'Номери карток', 'cookie'),
+                    'ru': ('8x8', 'Telegram', 'Номера карт', 'cookie')}
+        for language, parts in expected.items():
+            page = self.html('/privacy', language)
+            with self.subTest(language=language):
+                for part in parts:
+                    self.assertIn(part, page)
+                self.assertNotIn('third parties', page)
+                self.assertNotIn('третім особам', page)
+                self.assertNotIn('третьим лицам', page)
+
+    def test_the_footer_leads_to_the_rules(self):
+        for language in main.LANGUAGES:
+            footer = self.html('/', language).split('<footer', 1)[1]
+            with self.subTest(language=language):
+                self.assertIn('href="/rules"', footer)
+                self.assertIn(main.TRANSLATIONS[language]['common']['footer_rules'], footer)
 
 
 class FaviconTests(unittest.TestCase):
