@@ -416,7 +416,7 @@ class AcademyRulesTests(unittest.TestCase):
                     self.assertIn('5 USD', page)
 
     def test_payment_is_a_card_transfer_in_hryvnias_at_the_nbu_rate_confirmed_by_the_teacher(self):
-        words = {'en': ('hryvnias', 'NBU', 'card transfer', 'I have paid'),
+        words = {'en': ('hryvnias', 'NBU', 'the card of an Academy teacher', 'I have paid'),
                  'uk': ('гривнях', 'НБУ', 'переказом на картку', 'Я оплатив'),
                  'ru': ('гривнах', 'НБУ', 'переводом на карту', 'Я оплатил')}
         for language, expected in words.items():
@@ -457,6 +457,29 @@ class AcademyRulesTests(unittest.TestCase):
                 self.assertNotIn('third parties', page)
                 self.assertNotIn('третім особам', page)
                 self.assertNotIn('третьим лицам', page)
+
+    def test_only_what_the_academy_offers_one_to_one_exams_and_consultations_are_gone(self):
+        """Owner decision V3 = B of stage 6: no one-to-one lessons, exam preparation or consultations."""
+        gone = (r'\bindividual', r'one-to-one', r'\bexams?\b', r'exam preparation', r'consultation', r'індивідуальн',
+                r'іспит', r'консультац', r'индивидуальн', r'экзамен', r'консультац')
+        for language in main.LANGUAGES:
+            text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False).lower()
+            page = self.html('/', language).lower()
+            with self.subTest(language=language):
+                for word in gone:
+                    self.assertIsNone(re.search(word, text), word)
+                    self.assertIsNone(re.search(word, page), word)
+                self.assertIn(main.TRANSLATIONS[language]['home']['program_right_li4'].lower(), page)
+
+    def test_the_recipient_is_the_card_of_an_academy_teacher(self):
+        """Owner decision of 2026-10-17: the invoice and the rules name the recipient so; no card number anywhere."""
+        names = {'en': 'the card of an Academy teacher', 'uk': 'картку викладача Академії', 'ru': 'карту преподавателя Академии'}
+        for language, name in names.items():
+            texts = main.TRANSLATIONS[language]
+            with self.subTest(language=language):
+                self.assertIn(name, texts['home']['pricing_p'])
+                self.assertIn(name, texts['rules']['rules_4_p'])
+                self.assertIsNone(re.search(r'\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b', json.dumps(texts)))
 
     def test_the_footer_leads_to_the_rules(self):
         for language in main.LANGUAGES:

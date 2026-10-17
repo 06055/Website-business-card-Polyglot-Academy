@@ -21,7 +21,7 @@
   },
   "home": {
     "meta_title": "Polyglot Academy — learn languages online",
-    "meta_description": "A teacher’s Telegram channel plus group and one-to-one lessons: clear explanations, real practice and a step-by-step path from A1 to C1.",
+    "meta_description": "A teacher’s Telegram channel plus group lessons: clear explanations, real practice and a step-by-step path from A1 to C1.",
 
     "hero_kicker": "Language learning • Practice • Progress",
     "hero_h1": "Learn a foreign language — without the boredom",
@@ -68,21 +68,15 @@
     "program_right_b2": "In the chat",
     "program_right_li3": "A comfortable pace",
     "program_right_b3": "Limited spots",
+    "program_right_li4": "Groups of 3 to 10 people",
+    "program_right_b4": "60 min",
 
-    "services_left_h3": "One-to-one",
-    "services_left_li1": "Individual lessons with a teacher",
-    "services_left_li2": "Exam preparation",
-
-    "services_right_h3": "Also available",
-    "services_right_li1": "Groups of 3 to 10 people",
-    "services_right_b1": "60 min",
-    "services_right_li2": "Consultation",
     "pricing_h3": "Prices and payment",
     "pricing_li1": "Group lesson",
     "pricing_b1": "10 USD · 60 min",
     "pricing_li2": "Level interview with a teacher",
     "pricing_b2": "5 USD · 30 min",
-    "pricing_p": "The invoice is in hryvnias at the NBU rate of the day it is issued. You pay by card transfer using the invoice in the Academy bot (see Contacts) and then press “I have paid”; the teacher confirms the payment.",
+    "pricing_p": "The invoice is in hryvnias at the NBU rate of the day it is issued. You pay by transfer to the card of an Academy teacher, using the invoice in the Academy bot (see Contacts), and then press “I have paid”; the teacher confirms the payment.",
     "pricing_rules_btn": "Booking, cancelling and refunds",
 
     "program_main_h3": "Start with the Telegram channel",
@@ -130,7 +124,7 @@
     "rules_3_h2": "3. Booking",
     "rules_3_p": "The first two seats in a group are booked for free. The third booking starts payment: all three get an invoice and have up to 12 hours to pay, but no later than 6 hours before the start. Everyone after them gets an invoice at once. You can book until an hour before the start if a seat is free; with a late booking the transfer and its check must be finished by then.",
     "rules_4_h2": "4. Payment",
-    "rules_4_p": "You pay by card transfer using the invoice in the app. Put the order number in the transfer comment and press “I have paid” after the transfer. The lesson’s teacher confirms the payment once the money has arrived; while it is being checked, your seat is kept. The sender pays the bank’s commission. If less arrives, the rest has to be paid; an overpayment or a second transfer for the same invoice is returned. Never write a card number in messages.",
+    "rules_4_p": "You pay by transfer to the card of an Academy teacher, using the invoice in the app. Put the order number in the transfer comment and press “I have paid” after the transfer. The lesson’s teacher confirms the payment once the money has arrived; while it is being checked, your seat is kept. The sender pays the bank’s commission. If less arrives, the rest has to be paid; an overpayment or a second transfer for the same invoice is returned. Never write a card number in messages.",
     "rules_5_h2": "5. The group check",
     "rules_5_p": "6 hours before the start we check the group: if it has 3 participants together with the payments still being checked, it waits for the final decision; otherwise the lesson is called off. The final decision is made an hour before the start: 3 confirmed participants are needed, at least one of them paid with money.",
     "rules_6_h2": "6. Cancelling and moving",
