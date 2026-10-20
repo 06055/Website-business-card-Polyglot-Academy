@@ -122,13 +122,13 @@
     "rules_2_li2": "Level interview (30 minutes) — 5 USD.",
     "rules_2_li3": "The invoice is in hryvnias at the official NBU rate of the day it is issued, rounded to a whole hryvnia. The amount does not change afterwards.",
     "rules_3_h2": "3. Booking",
-    "rules_3_p": "The first two seats in a group are booked for free. The third booking starts payment: all three get an invoice and have up to 12 hours to pay, but no later than 6 hours before the start. Everyone after them gets an invoice at once. You can book until an hour before the start if a seat is free; with a late booking the transfer and its check must be finished by then.",
+    "rules_3_p": "The first two seats in a group are booked for free. The third booking starts payment: all three get an invoice and have up to 12 hours to pay, but no later than 6 hours before the start. Everyone after them gets an invoice at once. You can book until an hour before the start if a seat is free; with a late booking the transfer and its check must be finished by then. One time, one booking: you cannot book two lessons or interviews for the same time.",
     "rules_4_h2": "4. Payment",
-    "rules_4_p": "You pay by transfer to the card of an Academy teacher, using the invoice in the app. Put the order number in the transfer comment and press “I have paid” after the transfer. The lesson’s teacher confirms the payment once the money has arrived; while it is being checked, your seat is kept. The sender pays the bank’s commission. If less arrives, the rest has to be paid; an overpayment or a second transfer for the same invoice is returned. Never write a card number in messages.",
+    "rules_4_p": "You pay by transfer to the card of an Academy teacher, using the invoice in the app. Put the order number in the transfer comment and press “I have paid” after the transfer. The lesson’s teacher confirms the payment once the money has arrived; while it is being checked, your seat is kept. The sender pays the bank’s commission. If less arrives, the rest has to be paid; an overpayment or a second transfer for the same invoice is returned. Until you press “I have paid”, payment reminders come 6, 3 and 1 hours before the payment deadline. Never write a card number in messages.",
     "rules_5_h2": "5. The group check",
     "rules_5_p": "6 hours before the start we check the group: if it has 3 participants together with the payments still being checked, it waits for the final decision; otherwise the lesson is called off. The final decision is made an hour before the start: 3 confirmed participants are needed, at least one of them paid with money.",
     "rules_6_h2": "6. Cancelling and moving",
-    "rules_6_li1": "A paid booking can be cancelled for free until 6 hours before the start — once per calendar month. Later it can be cancelled without a refund.",
+    "rules_6_li1": "A paid booking can be cancelled for free until 6 hours before the start — once per calendar month. Later it can be cancelled without a refund. If this month’s cancellation limit is used up, you can still give up a paid seat before that time without a refund: the limit is not spent and the seat is freed; a move stays available if you have one left.",
     "rules_6_li2": "A paid seat can be moved to another lesson of the same language and level until 6 hours before the start — twice per calendar month.",
     "rules_6_li3": "If the Academy calls a lesson off or the group does not form, you choose a refund or another lesson; you have 7 calendar days to choose.",
     "rules_6_li4": "If you miss a lesson, there is no refund, but you keep the lesson materials if the teacher attached them.",
@@ -144,7 +144,7 @@
     "rules_11_p": "A teacher records a violation only after a check: a knowingly false “I have paid”, 3 invoices within 30 calendar days that ran out with neither a payment nor “I have paid”, or a violation at a lesson (a student disrupts it) — such a lesson is not refunded. Before a decision you have 24 hours to explain. The first violation is a warning, the next ones are strikes; 2 strikes within 90 calendar days lower your limits of free bookings and unpaid invoices to one. The restriction ends after 3 attended lessons paid with money.",
     "rules_12_h2": "12. Contacts",
     "rules_12_html": "Booking and payment: <a href=\"https://t.me/polyglotacademyofficial_bot\" target=\"_blank\" rel=\"noopener\">@polyglotacademyofficial_bot</a><br>Channel: <a href=\"https://t.me/polyglotacademyofficial\" target=\"_blank\" rel=\"noopener\">@polyglotacademyofficial</a><br>Email: <a href=\"mailto:polyglotacademyofficial@gmail.com\">polyglotacademyofficial@gmail.com</a>",
-    "rules_date": "Last updated: October 2026"
+    "rules_date": "Rules version: 2. Last updated: October 2026"
   },
   "privacy": {
     "meta_title": "Privacy Policy — Polyglot Academy",

@@ -437,6 +437,22 @@ class AcademyRulesTests(unittest.TestCase):
                     self.assertIn(part, page)
                 self.assertEqual(page.count('<h2 data-i18n="rules_'), 12)
 
+    def test_the_rules_follow_version_2_of_the_app(self):
+        """Owner decisions of 2026-10-19 (CURRENT_RULES_VERSION = 2): one time - one booking, payment reminders at
+        6, 3 and 1 hours before the payment deadline, a paid seat given up without a refund when the cancellation
+        limit is used up, and the version number on the page."""
+        expected = {'en': ('Rules version: 2', 'One time, one booking', '6, 3 and 1 hours before the payment deadline',
+                           'cancellation limit is used up', 'without a refund'),
+                    'uk': ('Версія правил: 2', 'Один час — один запис', 'за 6, 3 і 1 годину до строку оплати',
+                           'ліміт скасувань цього місяця вичерпано', 'без повернення'),
+                    'ru': ('Версия правил: 2', 'Одно время — одна запись', 'за 6, 3 и 1 час до срока оплаты',
+                           'лимит отмен в этом месяце исчерпан', 'без возврата')}
+        for language, parts in expected.items():
+            page = self.html('/rules', language)
+            with self.subTest(language=language):
+                for part in parts:
+                    self.assertIn(part, page)
+
     def test_no_claim_of_official_acquiring_or_a_registered_business(self):
         for language in main.LANGUAGES:
             text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False).lower()
