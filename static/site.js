@@ -12,11 +12,12 @@
   var dataEl = document.getElementById("i18n-data");
   var I18N = dataEl ? JSON.parse(dataEl.textContent) : {};
   var COOKIE = root.getAttribute("data-lang-cookie") || "polyglot_lang";
-  var LANGS = ["en", "uk", "ru"];
+  var LANGS = ["en", "uk", "ru", "de"];
   var META = {
     en: { label: "EN", flag: "fi-us" },
     uk: { label: "UA", flag: "fi-ua" },
-    ru: { label: "RU", flag: "fi-ru" }
+    ru: { label: "RU", flag: "fi-ru" },
+    de: { label: "DE", flag: "fi-de" }
   };
 
   function readCookie(name) {

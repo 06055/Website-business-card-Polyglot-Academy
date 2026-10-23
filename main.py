@@ -11,8 +11,9 @@ app = Flask(__name__)
 
 ROOT = Path(__file__).resolve().parent
 
-# The site's languages. The switcher labels them EN / UA / RU; the codes are the real language tags.
-LANGUAGES = ("en", "uk", "ru")
+# The site's languages - the four of the app (v1.0.3). The switcher labels them EN / UA / RU / DE; the codes are the
+# real language tags.
+LANGUAGES = ("en", "uk", "ru", "de")
 DEFAULT_LANGUAGE = "en"
 # Set only when a visitor picks a language by hand (static/site.js); the server reads it first.
 LANGUAGE_COOKIE = "polyglot_lang"
@@ -22,7 +23,10 @@ LANGUAGE_META = {
     "en": {"label": "EN", "flag": "fi-us", "name": "English"},
     "uk": {"label": "UA", "flag": "fi-ua", "name": "Українська"},
     "ru": {"label": "RU", "flag": "fi-ru", "name": "Русский"},
+    "de": {"label": "DE", "flag": "fi-de", "name": "Deutsch"},
 }
+# Where German is the language of the country (IP), the site opens in German.
+GERMAN_COUNTRIES = ("DE", "AT", "CH", "LI")
 
 
 def load_translations():
@@ -36,7 +40,7 @@ COUNTRY_DETECTOR = CountryDetector.from_environment()
 
 
 def detect_language(accept_languages):
-    """The visitor's first preferred language decides: uk* -> uk, ru* -> ru, anything else -> en.
+    """The visitor's first preferred language decides: uk* -> uk, ru* -> ru, de* -> de, anything else -> en.
 
     `accept_languages` is werkzeug's parsed Accept-Language (best quality first) or any iterable of
     language tags / (tag, quality) pairs.
@@ -46,7 +50,7 @@ def detect_language(accept_languages):
             continue
         tag = item[0] if isinstance(item, tuple) else item
         primary = str(tag).strip().lower().replace("_", "-").split("-")[0]
-        return primary if primary in ("uk", "ru") else DEFAULT_LANGUAGE
+        return primary if primary in ("uk", "ru", "de") else DEFAULT_LANGUAGE
     return DEFAULT_LANGUAGE
 
 
@@ -60,6 +64,8 @@ def choose_language(req):
         return "uk"
     if country == "RU":
         return "ru"
+    if country in GERMAN_COUNTRIES:
+        return "de"
     if country:
         return DEFAULT_LANGUAGE
     return detect_language(req.accept_languages)
@@ -72,7 +78,7 @@ def texts_for(language, section):
 def render_page(template, section):
     """The page in the visitor's language straight from the server: no flash of another language.
 
-    The same texts for all three languages go along as JSON, so switching by hand needs no reload.
+    The same texts for all four languages go along as JSON, so switching by hand needs no reload.
     """
     language = choose_language(request)
     response = make_response(render_template(

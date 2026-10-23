@@ -146,7 +146,8 @@ class LanguageTests(unittest.TestCase):
 
     The server renders it directly, so there is never an English page that turns Ukrainian after loading.
     """
-    HEADLINES = {'en': 'Learn a foreign language', 'uk': 'Вивчайте іноземну мову', 'ru': 'Изучайте иностранный язык'}
+    HEADLINES = {'en': 'Learn a foreign language', 'uk': 'Вивчайте іноземну мову', 'ru': 'Изучайте иностранный язык',
+                 'de': 'Lerne eine Fremdsprache'}
 
     def setUp(self):
         app.config.update(TESTING=True)
@@ -164,7 +165,7 @@ class LanguageTests(unittest.TestCase):
         return re.search(r'<html lang="([a-z]+)"', html).group(1)
 
     def test_the_browser_language_is_the_fallback_when_country_is_unknown(self):
-        for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'en'), ('pl-PL', 'en')):
+        for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'de'), ('pl-PL', 'en')):
             with self.subTest(accept=accept):
                 response, html = self.page(accept=accept)
                 self.assertEqual(self.language_of(html), expected)
@@ -172,7 +173,7 @@ class LanguageTests(unittest.TestCase):
                 self.assertIn(self.HEADLINES[expected], html, 'the text itself is rendered in that language')
 
     def test_country_decides_the_first_visit(self):
-        for country, expected in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'en'), ('US', 'en')):
+        for country, expected in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'de'), ('AT', 'de'), ('US', 'en')):
             with self.subTest(country=country):
                 response, html = self.page(country=country, accept='ru-RU')
                 self.assertEqual(self.language_of(html), expected)
@@ -189,11 +190,11 @@ class LanguageTests(unittest.TestCase):
 
     def test_detection_rules(self):
         cases = {'uk': 'uk', 'uk-UA,uk;q=0.9,en;q=0.8': 'uk', 'ru': 'ru', 'ru-BY,ru;q=0.9': 'ru', 'ru-KZ': 'ru',
-                 'en-GB': 'en', 'de-DE,de;q=0.9': 'en', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
+                 'en-GB': 'en', 'de-DE,de;q=0.9': 'de', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
                  # the best-rated language wins, whatever the order it is written in
                  'en;q=0.4, uk;q=0.9': 'uk',
-                 # the first preference decides: a German browser gets English even if Ukrainian comes second
-                 'de-DE,uk;q=0.9': 'en', 'uk;q=0': 'en', 'ru;q=0': 'en'}
+                 # the first preference decides: a German browser gets German even if Ukrainian comes second
+                 'de-DE,uk;q=0.9': 'de', 'uk;q=0': 'en', 'ru;q=0': 'en'}
         for accept, expected in cases.items():
             with self.subTest(accept=accept):
                 self.assertEqual(self.language_of(self.page(accept=accept)[1]), expected)
@@ -228,7 +229,7 @@ class LanguageTests(unittest.TestCase):
     def test_the_page_carries_every_language_for_switching_without_a_reload(self):
         html = self.page(accept='en-US')[1]
         data = json.loads(re.search(r'<script type="application/json" id="i18n-data">(.*?)</script>', html, re.S).group(1))
-        self.assertEqual(set(data), {'en', 'uk', 'ru'})
+        self.assertEqual(set(data), {'en', 'uk', 'ru', 'de'})
         self.assertEqual(data['uk']['hero_h1'], main.TRANSLATIONS['uk']['home']['hero_h1'])
         self.assertIn('data-lang-cookie="polyglot_lang"', html)
 
@@ -566,3 +567,37 @@ class DeploymentFilesTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TextTests(unittest.TestCase):
+    """v1.0.3, 1.3 (the Academy leaves beta): the site's texts as the app's - every key in the four languages, none empty,
+    and no beta, test, demo, simulator, technical word or status code a visitor would read."""
+    FORBIDDEN = re.compile(r"(?<![\w])(beta|бета|demo|демо|sim|симулятор\w*|simulator|test|тест\w*|JaaS|initData|"
+                           r"webhook\w*|API|strike\w*|null|undefined|TODO|lorem)(?![\w])", re.I)
+    CODE = re.compile(r"\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b")
+
+    @staticmethod
+    def flat(node, prefix=''):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                yield from TextTests.flat(value, f'{prefix}.{key}' if prefix else key)
+        else:
+            yield prefix, node
+
+    def test_every_key_in_four_languages_and_none_empty(self):
+        self.assertEqual(main.LANGUAGES, ('en', 'uk', 'ru', 'de'))
+        texts = {language: dict(self.flat(main.TRANSLATIONS[language])) for language in main.LANGUAGES}
+        keys = set().union(*texts.values())
+        for language, values in texts.items():
+            self.assertEqual(sorted(keys - set(values)), [], language)
+            self.assertEqual([key for key, value in values.items() if not str(value).strip()], [], language)
+
+    def test_no_text_says_beta_test_demo_a_technical_word_or_a_code(self):
+        found = []
+        for language in main.LANGUAGES:
+            for key, value in self.flat(main.TRANSLATIONS[language]):
+                plain = re.sub(r'<[^>]+>', ' ', str(value))
+                if self.FORBIDDEN.search(plain) or self.CODE.search(plain):
+                    found.append(f'{language} {key}: {plain[:80]}')
+        self.assertEqual(found, [])
+
