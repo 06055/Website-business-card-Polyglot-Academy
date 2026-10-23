@@ -601,3 +601,25 @@ class TextTests(unittest.TestCase):
                     found.append(f'{language} {key}: {plain[:80]}')
         self.assertEqual(found, [])
 
+
+class SecurityHeaderTests(unittest.TestCase):
+    """v1.0.3, security 2.1: every answer of the site carries its security headers; the policy allows nothing inline
+    and names every outside host the pages use."""
+
+    def test_every_answer_has_the_headers_and_the_policy_names_every_outside_host(self):
+        client = main.app.test_client()
+        for path in ('/', '/rules', '/privacy', '/terms', '/static/site.js', '/no-such-page'):
+            answer = client.get(path)
+            for name in main.SECURITY_HEADERS:
+                self.assertIn(name, answer.headers, f'{path}: {name}')
+        policy = main.CONTENT_SECURITY_POLICY
+        self.assertNotIn('unsafe-inline', policy)
+        self.assertNotIn('unsafe-eval', policy)
+        self.assertIn("frame-ancestors 'none'", policy)
+        pages = ''.join(path.read_text(encoding='utf-8') for path in (ROOT / 'templates').glob('*.html'))
+        pages += (ROOT / 'static' / 'polyglot_academy_style.css').read_text(encoding='utf-8')
+        for host in set(re.findall(r'(?:href|src)="(https://[a-zA-Z0-9.-]+)/', pages)) - {'https://t.me'}:
+            self.assertIn(host, policy, f'{host} is used by a page but not allowed by the policy')
+        self.assertNotRegex(pages, r'<script(?![^>]*\b(?:src=|type="application/json"))', 'no inline script')
+        self.assertNotRegex(pages, r'\sstyle="|<style', 'no inline style')
+

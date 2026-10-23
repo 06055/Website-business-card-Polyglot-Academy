@@ -36,6 +36,37 @@ def load_translations():
 
 
 TRANSLATIONS = load_translations()
+
+# v1.0.3, security 2.1 (OWASP A05): the headers the site sent none of. Scripts and styles only from the site itself and
+# the flag icons' CDN (cdn.jsdelivr.net, CSS and its SVG flags); no inline script or style exists on any page; the site
+# is never framed; HTTPS only (Caddy serves nothing else) - a year of HSTS.
+CONTENT_SECURITY_POLICY = "; ".join((
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' https://cdn.jsdelivr.net",
+    "img-src 'self' data: https://cdn.jsdelivr.net",
+    "font-src 'self'",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'none'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+))
+SECURITY_HEADERS = {
+    "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+    "Strict-Transport-Security": "max-age=31536000",
+}
+
+
+@app.after_request
+def security_headers(response):
+    for name, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(name, value)
+    return response
 COUNTRY_DETECTOR = CountryDetector.from_environment()
 
 
