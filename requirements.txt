@@ -1,4 +1,6 @@
-Flask==3.1.0
+# 3.1.3: PYSEC-2026-1377 and PYSEC-2026-2151 of 3.1.0 are fixed (v1.0.3, security 2.1); Werkzeug pinned with it.
+Flask==3.1.3
+Werkzeug==3.1.8
 maxminddb==3.2.0
 # Production WSGI server (the Flask development server is never used on the VPS).
 gunicorn==23.0.0
