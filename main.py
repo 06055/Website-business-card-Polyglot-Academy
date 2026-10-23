@@ -11,9 +11,18 @@ app = Flask(__name__)
 
 ROOT = Path(__file__).resolve().parent
 
-# The site's languages - the four of the app (v1.0.3). The switcher labels them EN / UA / RU / DE; the codes are the
-# real language tags.
-LANGUAGES = ("en", "uk", "ru", "de")
+# The site's languages. The switcher labels them EN / UA / RU (/ DE); the codes are the real language tags. German - the
+# fourth of the app - is translated and tested, but shown only with SITE_GERMAN=1 (owner decision В-5 of 2026-10-24: not
+# until a native speaker has checked it). Off: a German browser or country gets English, the switcher has no DE, the page
+# carries no German text and a saved «de» choice counts for nothing.
+ALL_LANGUAGES = ("en", "uk", "ru", "de")
+
+
+def published_languages(environ=os.environ):
+    return ALL_LANGUAGES if environ.get("SITE_GERMAN", "0").strip() == "1" else ("en", "uk", "ru")
+
+
+LANGUAGES = published_languages()
 DEFAULT_LANGUAGE = "en"
 # Set only when a visitor picks a language by hand (static/site.js); the server reads it first.
 LANGUAGE_COOKIE = "polyglot_lang"
@@ -32,7 +41,7 @@ GERMAN_COUNTRIES = ("DE", "AT", "CH", "LI")
 def load_translations():
     """{language: {section: {key: text}}} from translations/<language>.json - the only copy of the texts."""
     return {code: json.loads((ROOT / "translations" / f"{code}.json").read_text(encoding="utf-8"))
-            for code in LANGUAGES}
+            for code in ALL_LANGUAGES}
 
 
 TRANSLATIONS = load_translations()
@@ -71,7 +80,8 @@ COUNTRY_DETECTOR = CountryDetector.from_environment()
 
 
 def detect_language(accept_languages):
-    """The visitor's first preferred language decides: uk* -> uk, ru* -> ru, de* -> de, anything else -> en.
+    """The visitor's first preferred language decides: uk* -> uk, ru* -> ru, de* -> de (when German is shown), anything
+    else -> en.
 
     `accept_languages` is werkzeug's parsed Accept-Language (best quality first) or any iterable of
     language tags / (tag, quality) pairs.
@@ -81,7 +91,7 @@ def detect_language(accept_languages):
             continue
         tag = item[0] if isinstance(item, tuple) else item
         primary = str(tag).strip().lower().replace("_", "-").split("-")[0]
-        return primary if primary in ("uk", "ru", "de") else DEFAULT_LANGUAGE
+        return primary if primary in LANGUAGES else DEFAULT_LANGUAGE
     return DEFAULT_LANGUAGE
 
 
@@ -95,7 +105,7 @@ def choose_language(req):
         return "uk"
     if country == "RU":
         return "ru"
-    if country in GERMAN_COUNTRIES:
+    if country in GERMAN_COUNTRIES and "de" in LANGUAGES:
         return "de"
     if country:
         return DEFAULT_LANGUAGE
@@ -117,7 +127,7 @@ def render_page(template, section):
         lang=language,
         t=texts_for(language, section),
         i18n={code: texts_for(code, section) for code in LANGUAGES},
-        languages=LANGUAGE_META,
+        languages={code: LANGUAGE_META[code] for code in LANGUAGES},
         language_cookie=LANGUAGE_COOKIE,
         favicon_version=FAVICON_VERSION,
         year=datetime.date.today().year,

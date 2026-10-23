@@ -98,6 +98,8 @@ Caddy. Только от такого peer приложение читает `X-
 
 - Файл: актуальная **GeoLite2-Country.mmdb**, формат MMDB, не CSV и не архив.
 - Env в контейнере website: `GEOIP_COUNTRY_DB=/app/data/GeoLite2-Country.mmdb`.
+- Немецкий язык сайта выключен (решение владельца В-5 от 2026-10-24): сайт показывает RU/UK/EN. Включить после проверки
+  носителем — `SITE_GERMAN=1` в env контейнера website и перезапуск website.
   Путь не зашит в код: он целиком задаётся этой переменной.
 - Dependency: `maxminddb==3.2.0` уже включена в `requirements.txt`; Pillow для production не нужен.
 - Dockerfile менять не требуется: он уже устанавливает `requirements.txt`. При будущем deploy

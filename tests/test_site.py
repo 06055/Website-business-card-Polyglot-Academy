@@ -165,7 +165,7 @@ class LanguageTests(unittest.TestCase):
         return re.search(r'<html lang="([a-z]+)"', html).group(1)
 
     def test_the_browser_language_is_the_fallback_when_country_is_unknown(self):
-        for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'de'), ('pl-PL', 'en')):
+        for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('en-US', 'en'), ('de-DE', 'en'), ('pl-PL', 'en')):
             with self.subTest(accept=accept):
                 response, html = self.page(accept=accept)
                 self.assertEqual(self.language_of(html), expected)
@@ -173,7 +173,7 @@ class LanguageTests(unittest.TestCase):
                 self.assertIn(self.HEADLINES[expected], html, 'the text itself is rendered in that language')
 
     def test_country_decides_the_first_visit(self):
-        for country, expected in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'de'), ('AT', 'de'), ('US', 'en')):
+        for country, expected in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'en'), ('AT', 'en'), ('US', 'en')):
             with self.subTest(country=country):
                 response, html = self.page(country=country, accept='ru-RU')
                 self.assertEqual(self.language_of(html), expected)
@@ -190,11 +190,11 @@ class LanguageTests(unittest.TestCase):
 
     def test_detection_rules(self):
         cases = {'uk': 'uk', 'uk-UA,uk;q=0.9,en;q=0.8': 'uk', 'ru': 'ru', 'ru-BY,ru;q=0.9': 'ru', 'ru-KZ': 'ru',
-                 'en-GB': 'en', 'de-DE,de;q=0.9': 'de', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
+                 'en-GB': 'en', 'de-DE,de;q=0.9': 'en', 'pl-PL,pl;q=0.9,en;q=0.5': 'en', '*': 'en', '': 'en',
                  # the best-rated language wins, whatever the order it is written in
                  'en;q=0.4, uk;q=0.9': 'uk',
-                 # the first preference decides: a German browser gets German even if Ukrainian comes second
-                 'de-DE,uk;q=0.9': 'de', 'uk;q=0': 'en', 'ru;q=0': 'en'}
+                 # the first preference decides: a German browser gets English (German is off) even if Ukrainian comes
+                 'de-DE,uk;q=0.9': 'en', 'uk;q=0': 'en', 'ru;q=0': 'en'}
         for accept, expected in cases.items():
             with self.subTest(accept=accept):
                 self.assertEqual(self.language_of(self.page(accept=accept)[1]), expected)
@@ -229,7 +229,7 @@ class LanguageTests(unittest.TestCase):
     def test_the_page_carries_every_language_for_switching_without_a_reload(self):
         html = self.page(accept='en-US')[1]
         data = json.loads(re.search(r'<script type="application/json" id="i18n-data">(.*?)</script>', html, re.S).group(1))
-        self.assertEqual(set(data), {'en', 'uk', 'ru', 'de'})
+        self.assertEqual(set(data), {'en', 'uk', 'ru'}, 'German is not published (owner decision В-5)')
         self.assertEqual(data['uk']['hero_h1'], main.TRANSLATIONS['uk']['home']['hero_h1'])
         self.assertIn('data-lang-cookie="polyglot_lang"', html)
 
@@ -585,8 +585,8 @@ class TextTests(unittest.TestCase):
             yield prefix, node
 
     def test_every_key_in_four_languages_and_none_empty(self):
-        self.assertEqual(main.LANGUAGES, ('en', 'uk', 'ru', 'de'))
-        texts = {language: dict(self.flat(main.TRANSLATIONS[language])) for language in main.LANGUAGES}
+        self.assertEqual(main.ALL_LANGUAGES, ('en', 'uk', 'ru', 'de'))
+        texts = {language: dict(self.flat(main.TRANSLATIONS[language])) for language in main.ALL_LANGUAGES}
         keys = set().union(*texts.values())
         for language, values in texts.items():
             self.assertEqual(sorted(keys - set(values)), [], language)
@@ -594,7 +594,7 @@ class TextTests(unittest.TestCase):
 
     def test_no_text_says_beta_test_demo_a_technical_word_or_a_code(self):
         found = []
-        for language in main.LANGUAGES:
+        for language in main.ALL_LANGUAGES:
             for key, value in self.flat(main.TRANSLATIONS[language]):
                 plain = re.sub(r'<[^>]+>', ' ', str(value))
                 if self.FORBIDDEN.search(plain) or self.CODE.search(plain):
@@ -622,4 +622,32 @@ class SecurityHeaderTests(unittest.TestCase):
             self.assertIn(host, policy, f'{host} is used by a page but not allowed by the policy')
         self.assertNotRegex(pages, r'<script(?![^>]*\b(?:src=|type="application/json"))', 'no inline script')
         self.assertNotRegex(pages, r'\sstyle="|<style', 'no inline style')
+
+
+class GermanSwitchTests(unittest.TestCase):
+    """Owner decision В-5 of 2026-10-24: RU/UK/EN on the site; German only with SITE_GERMAN=1, after a native check."""
+
+    def page(self, accept='', cookie=None, country=None):
+        client = main.app.test_client()
+        if cookie:
+            client.set_cookie(main.LANGUAGE_COOKIE, cookie)
+        with patch.object(main.COUNTRY_DETECTOR, 'country_for_request', return_value=country):
+            return client.get('/', headers={'Accept-Language': accept}).get_data(as_text=True)
+
+    def test_off_by_default_nothing_german_is_shown(self):
+        self.assertEqual(main.published_languages({}), ('en', 'uk', 'ru'))
+        self.assertEqual(main.LANGUAGES, ('en', 'uk', 'ru'), 'the published site: German off')
+        for html in (self.page(accept='de-DE'), self.page(country='DE'), self.page(cookie='de')):
+            self.assertIn('<html lang="en"', html)
+            self.assertNotIn('Deutsch', html)
+            self.assertNotIn('Lerne eine Fremdsprache', html)
+            self.assertNotIn('"de":', html.split('id="i18n-data">', 1)[1].split('</script>', 1)[0])
+
+    def test_on_with_the_switch_german_everywhere(self):
+        self.assertEqual(main.published_languages({'SITE_GERMAN': '1'}), main.ALL_LANGUAGES)
+        with patch.object(main, 'LANGUAGES', main.ALL_LANGUAGES):
+            for html in (self.page(accept='de-DE'), self.page(country='AT'), self.page(cookie='de')):
+                self.assertIn('<html lang="de"', html)
+                self.assertIn('Lerne eine Fremdsprache', html)
+            self.assertIn('Deutsch', self.page(accept='en-US'), 'DE in the switcher')
 

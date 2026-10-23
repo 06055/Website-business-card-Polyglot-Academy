@@ -40,7 +40,7 @@ class GeoReviewTests(unittest.TestCase):
                          '2001:4860:4860::8888')
 
     def test_country_database_mapping_and_lookup_cache(self):
-        for country, language in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'de'), ('US', 'en'), (None, 'ru')):
+        for country, language in (('UA', 'uk'), ('RU', 'ru'), ('DE', 'en'), ('US', 'en'), (None, 'ru')):
             detector = CountryDetector()
             detector._reader_checked = True
             detector._reader = Mock()
@@ -63,7 +63,7 @@ class GeoReviewTests(unittest.TestCase):
     def test_local_private_and_invalid_ips_use_browser_fallback(self):
         with patch.object(main, 'COUNTRY_DETECTOR', CountryDetector()):
             for peer in ('127.0.0.1', '10.0.0.1', '::1', '::ffff:127.0.0.1', 'invalid'):
-                for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('de-DE', 'de'), ('pl-PL', 'en')):
+                for accept, expected in (('uk-UA', 'uk'), ('ru-RU', 'ru'), ('de-DE', 'en'), ('pl-PL', 'en')):
                     with self.subTest(peer=peer, accept=accept):
                         response = main.app.test_client().get('/', environ_base={'REMOTE_ADDR': peer},
                                                               headers={'Accept-Language': accept})

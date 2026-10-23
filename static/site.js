@@ -67,7 +67,8 @@
   }
 
   function chooseLang(lang) {
-    if (LANGS.indexOf(lang) === -1) return;
+    // A language the server did not send (German while it is switched off) cannot be chosen.
+    if (LANGS.indexOf(lang) === -1 || !I18N[lang]) return;
     saveChoice(lang);
     applyLang(lang);
   }
