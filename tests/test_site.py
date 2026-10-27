@@ -475,6 +475,21 @@ class AcademyRulesTests(unittest.TestCase):
                 self.assertNotIn('третім особам', page)
                 self.assertNotIn('третьим лицам', page)
 
+    def test_the_privacy_policy_says_what_stays_of_a_deleted_account(self):
+        """v1.0.7 (the owner's task of 2026-10-27, 4): since v1.0.6 the app keeps a one-way fingerprint of a deleted
+        account's Telegram ID - only so that the welcome coins and the invitation reward are not given twice."""
+        expected = {'ru': ('отпечаток вашего Telegram ID', 'нельзя узнать', 'приветственные коины'),
+                    'uk': ('відбиток вашого Telegram ID', 'не можна дізнатися', 'вітальні монети'),
+                    'en': ('fingerprint of your Telegram ID', 'cannot be', 'welcome coins'),
+                    'de': ('Fingerabdruck deiner Telegram-ID', 'nicht ermitteln', 'Willkommens-Coins')}
+        for language, parts in expected.items():
+            text = main.TRANSLATIONS[language]['privacy']['privacy_6_p']
+            with self.subTest(language=language):
+                for part in parts:
+                    self.assertIn(part, text)
+                if language in main.LANGUAGES:
+                    self.assertIn(parts[0], self.html('/privacy', language), 'on the page itself')
+
     def test_only_what_the_academy_offers_one_to_one_exams_and_consultations_are_gone(self):
         """Owner decision V3 = B of stage 6: no one-to-one lessons, exam preparation or consultations."""
         gone = (r'\bindividual', r'one-to-one', r'\bexams?\b', r'exam preparation', r'consultation', r'індивідуальн',
