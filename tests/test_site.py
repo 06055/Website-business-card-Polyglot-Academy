@@ -666,3 +666,30 @@ class GermanSwitchTests(unittest.TestCase):
                 self.assertIn('Lerne eine Fremdsprache', html)
             self.assertIn('Deutsch', self.page(accept='en-US'), 'DE in the switcher')
 
+
+class PhoneLayoutTests(unittest.TestCase):
+    """The owner on a phone (2026-10-30): the layout had faults and no animations were seen. Measured in Chromium at 360,
+    375, 390, 414, 430, 768 and 1280 px in ru/uk/en: an empty screen above the footer (#contacts at the full screen
+    height), footer links of 17 px wrapping with their dots left at the line ends; the effects that answer a mouse were
+    the only ones the page had for an action, so a phone saw none."""
+    css = (ROOT / 'static' / 'polyglot_academy_style.css').read_text(encoding='utf-8')
+
+    def block(self, media):
+        start = self.css.rindex('@media ' + media + '{')
+        return self.css[start:self.css.index('\n}', start)]
+
+    def test_phones_have_no_empty_screen_and_a_footer_in_one_column(self):
+        phone = self.block('(max-width: 599px)')
+        self.assertIn('#contacts{ min-height: 0; }', phone)
+        self.assertIn('.footer__dot{ display: none; }', phone)
+        self.assertIn('flex-direction: column', phone)
+
+    def test_a_finger_reaches_every_footer_link(self):
+        for media in ('(max-width: 599px)', '(pointer: coarse)'):
+            self.assertIn('.footer__links a, .footer__right a{ display: inline-block; padding: 12px 0; }', self.block(media), media)
+
+    def test_touch_screens_get_their_own_motion_and_a_reduced_motion_setting_gets_none(self):
+        touch = self.block('(hover: none) and (prefers-reduced-motion: no-preference)')
+        for rule in ('.review-card.reveal.is-visible::before', '.levels.reveal.is-visible .level__code', '.btn:active'):
+            self.assertIn(rule, touch)
+        self.assertNotIn('animation:', touch, 'transitions on transform and opacity only - smooth on a phone')
