@@ -404,17 +404,44 @@ class AcademyRulesTests(unittest.TestCase):
         self.client.set_cookie(main.LANGUAGE_COOKIE, language)
         return unescape(self.client.get(path).get_data(as_text=True))
 
-    def test_the_prices_are_the_owners_on_the_home_page_the_rules_and_the_terms(self):
-        for language in main.LANGUAGES:
+    def test_no_prices_anywhere_on_the_site(self):
+        """Owner, 2026-10-31: no prices on the site - no sum in USD or hryvnias on any page, in any language; how
+        payment works stays in the rules, without sums."""
+        for language in main.ALL_LANGUAGES:
+            text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False)
             with self.subTest(language=language):
-                home = self.html('/', language).split('id="prices"', 1)[1].split('card--cta', 1)[0]
-                self.assertIn('10 USD', home)
-                self.assertIn('5 USD', home)
-                self.assertIn('href="/rules"', home)
-                for path in ('/rules', '/terms'):
-                    page = self.html(path, language)
-                    self.assertIn('10 USD', page)
-                    self.assertIn('5 USD', page)
+                self.assertIsNone(re.search(r'\bUSD\b|\d\s*(\$|€|грн|UAH)', text))
+                self.assertNotIn('pricing_', text)
+        for language in main.LANGUAGES:
+            for path in ('/', '/rules', '/terms', '/privacy'):
+                page = self.html(path, language)
+                with self.subTest(language=language, path=path):
+                    self.assertNotIn('USD', page)
+                    self.assertNotIn('id="prices"', page)
+
+    def test_groups_of_3_to_7_everywhere_on_the_site(self):
+        """Owner, 2026-10-31: groups of 3 to 7 people, on the home page and in the rules, all languages."""
+        expected = {'ru': 'от 3 до 7', 'uk': 'від 3 до 7', 'en': '3 to 7', 'de': '3 bis 7'}
+        for language, words in expected.items():
+            texts = main.TRANSLATIONS[language]
+            values = ' '.join(value for section in texts.values() for value in section.values())
+            with self.subTest(language=language):
+                self.assertIn(words, texts['home']['program_right_li4'])
+                self.assertIn(words, texts['rules']['rules_1_p'])
+                self.assertIsNone(re.search(r'\b3\D{1,6}10\b', values))
+                if language in main.LANGUAGES:
+                    self.assertIn(words, self.html('/', language))
+
+    def test_no_teacher_support_in_the_chat_line(self):
+        """Owner, 2026-10-31: the line «Поддержка преподавателя и ответы на вопросы - В чате» is gone, all languages."""
+        for language in main.ALL_LANGUAGES:
+            home = main.TRANSLATIONS[language]['home']
+            with self.subTest(language=language):
+                self.assertNotIn('program_right_li2', home)
+                self.assertNotIn('program_right_b2', home)
+        for language in main.LANGUAGES:
+            self.assertNotIn('program_right_li2', self.html('/', language))
+        self.assertNotIn('Поддержка преподавателя', self.html('/', 'ru'))
 
     def test_payment_is_a_card_transfer_in_hryvnias_at_the_nbu_rate_confirmed_by_the_teacher(self):
         words = {'en': ('hryvnias', 'NBU', 'the card of an Academy teacher', 'I have paid'),
@@ -424,8 +451,7 @@ class AcademyRulesTests(unittest.TestCase):
             texts = main.TRANSLATIONS[language]
             with self.subTest(language=language):
                 for word in expected:
-                    self.assertIn(word, texts['home']['pricing_p'] + texts['rules']['rules_4_p']
-                                  + texts['rules']['rules_2_li3'])
+                    self.assertIn(word, texts['rules']['rules_4_p'] + texts['rules']['rules_2_li3'])
 
     def test_the_rules_say_the_terms_the_academy_works_by(self):
         expected = {'en': ('6 hours', 'an hour before', '7 calendar days', '5 business days', '25%', '5 minutes', '24 hours'),
@@ -509,7 +535,6 @@ class AcademyRulesTests(unittest.TestCase):
         for language, name in names.items():
             texts = main.TRANSLATIONS[language]
             with self.subTest(language=language):
-                self.assertIn(name, texts['home']['pricing_p'])
                 self.assertIn(name, texts['rules']['rules_4_p'])
                 self.assertIsNone(re.search(r'\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b', json.dumps(texts)))
 
@@ -690,6 +715,9 @@ class PhoneLayoutTests(unittest.TestCase):
 
     def test_touch_screens_get_their_own_motion_and_a_reduced_motion_setting_gets_none(self):
         touch = self.block('(hover: none) and (prefers-reduced-motion: no-preference)')
-        for rule in ('.review-card.reveal.is-visible::before', '.levels.reveal.is-visible .level__code', '.btn:active'):
+        for rule in ('.btn:active', '.card:not(.levels):active'):
             self.assertIn(rule, touch)
+        # Owner, 2026-10-31: only a tap moves something; the review line and the A1-C1 badges stay as in 8ef2908.
+        for rule in ('.review-card', '.level__code'):
+            self.assertNotIn(rule, touch)
         self.assertNotIn('animation:', touch, 'transitions on transform and opacity only - smooth on a phone')

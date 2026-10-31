@@ -912,14 +912,6 @@ body.legal{ padding: 24px 16px 56px; min-height: 100%; }
     .footer__links a, .footer__right a{ display: inline-block; padding: 12px 0; }
 }
 @media (hover: none) and (prefers-reduced-motion: no-preference){
-    .motion-ready .review-card.reveal::before{ transform: scaleX(.35); }
-    .motion-ready .review-card.reveal.is-visible::before{ transform: scaleX(1.25); transition: transform .7s cubic-bezier(.2,.65,.25,1) .3s; }
-    .motion-ready .levels.reveal .level__code{ transform: translateY(8px); opacity: .5; transition: transform .5s cubic-bezier(.2,.65,.25,1), opacity .5s ease, border-color .28s ease; }
-    .motion-ready .levels.reveal.is-visible .level__code{ transform: translateY(0); opacity: 1; }
-    .motion-ready .levels.reveal.is-visible .level--a2 .level__code{ transition-delay: .08s; }
-    .motion-ready .levels.reveal.is-visible .level--b1 .level__code{ transition-delay: .16s; }
-    .motion-ready .levels.reveal.is-visible .level--b2 .level__code{ transition-delay: .24s; }
-    .motion-ready .levels.reveal.is-visible .level--c1 .level__code{ transition-delay: .32s; }
     .btn:active{ transform: scale(.97); }
     :is(#about, #program, #reviews, #contacts) .card:not(.levels):active{ transform: translateY(-2px); border-color: rgba(255,190,130,.27); }
 }
