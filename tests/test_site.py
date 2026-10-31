@@ -345,7 +345,10 @@ class ContentTests(unittest.TestCase):
 
     def test_no_promise_of_a_result_in_a_number_of_days(self):
         for language in main.LANGUAGES:
-            text = json.dumps(main.TRANSLATIONS[language], ensure_ascii=False).lower()
+            texts = {section: dict(items) for section, items in main.TRANSLATIONS[language].items()}
+            # How long the privacy policy keeps data (backups up to 14 months, В-52) promises no result.
+            texts['privacy'].pop('privacy_4_p')
+            text = json.dumps(texts, ensure_ascii=False).lower()
             with self.subTest(language=language):
                 self.assertIsNone(re.search(r'\b\d+\s*(days|дн|день|тиж|недел|weeks|місяц|месяц)', text))
                 self.assertNotIn('guarantee you', text)
@@ -442,6 +445,52 @@ class AcademyRulesTests(unittest.TestCase):
         for language in main.LANGUAGES:
             self.assertNotIn('program_right_li2', self.html('/', language))
         self.assertNotIn('Поддержка преподавателя', self.html('/', 'ru'))
+
+    def test_the_channel_card_promises_no_support(self):
+        """Owner decision В-51 of 2026-10-31: «Начните с Telegram-канала» says lessons and practice - no support."""
+        cards = {'ru': ('В канале — уроки и практика.', 'поддержк'), 'uk': ('У каналі — уроки й практика.', 'підтримк'),
+                 'en': ('Lessons and practice are all in the channel.', 'support'),
+                 'de': ('Lektionen und Übungen — alles im Kanal.', 'unterstützung')}
+        for language, (text, gone) in cards.items():
+            card = main.TRANSLATIONS[language]['home']['program_main_p']
+            with self.subTest(language=language):
+                self.assertTrue(card.startswith(text), card)
+                self.assertNotIn(gone, card.lower())
+                if language in main.LANGUAGES:
+                    shown = self.html('/', language).split('card--cta', 1)[1].split('</a>', 1)[0]
+                    self.assertIn(text, shown)
+                    self.assertNotIn(gone, shown.lower())
+
+    def test_no_prices_heading_without_prices(self):
+        """Owner decision В-45 Б of 2026-10-31: section 2 of the rules is the invoice, the terms begin with payment."""
+        expected = {'ru': ('2. Счёт', 'Оплата, отмена'), 'uk': ('2. Рахунок', 'Оплата, скасування'),
+                    'en': ('2. Invoice', 'Payment, cancelling'), 'de': ('2. Rechnung', 'Zahlung, Stornierung')}
+        for language, (heading, terms) in expected.items():
+            texts = main.TRANSLATIONS[language]
+            with self.subTest(language=language):
+                self.assertEqual(texts['rules']['rules_2_h2'], heading)
+                self.assertTrue(texts['terms']['terms_5_html'].startswith(terms))
+
+    def test_backups_are_kept_up_to_14_months(self):
+        """Owner decision В-52 of 2026-10-31: the longest a database backup lives is in B2 - hidden 400 days after upload,
+        deleted a day later (Student OPS_INSTALL_RUNBOOK.md, step 0; owner decision A17 А); the server keeps the newest
+        of each of 12 months (ops.conf KEEP_MONTHLY=12, at most 372 days). Up to 14 months is the truth: 13 months are
+        397 days at most."""
+        longest = 400 + 1
+        self.assertLess(366 + 31, longest, '13 months would be short of the truth')
+        self.assertGreaterEqual(365 + 28 + 31, longest, '14 months cover it')
+        expected = {'ru': 'Резервные копии базы — до 14 месяцев.', 'uk': 'Резервні копії бази — до 14 місяців.',
+                    'en': 'Database backups are kept for up to 14 months.',
+                    'de': 'Datenbanksicherungen werden bis zu 14 Monate aufbewahrt.'}
+        for language, sentence in expected.items():
+            with self.subTest(language=language):
+                self.assertIn(sentence, main.TRANSLATIONS[language]['privacy']['privacy_4_p'])
+                if language in main.LANGUAGES:
+                    page = self.html('/privacy', language)
+                    self.assertIn(sentence, page)
+                    self.assertNotIn('одного года', page)
+                    self.assertNotIn('одного року', page)
+                    self.assertNotIn('up to one year', page)
 
     def test_payment_is_a_card_transfer_in_hryvnias_at_the_nbu_rate_confirmed_by_the_teacher(self):
         words = {'en': ('hryvnias', 'NBU', 'the card of an Academy teacher', 'I have paid'),
