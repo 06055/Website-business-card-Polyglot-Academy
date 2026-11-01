@@ -770,3 +770,9 @@ class PhoneLayoutTests(unittest.TestCase):
         for rule in ('.review-card', '.level__code'):
             self.assertNotIn(rule, touch)
         self.assertNotIn('animation:', touch, 'transitions on transform and opacity only - smooth on a phone')
+
+    def test_a_legal_page_paints_its_background_once(self):
+        """v1.0.12, A6: the gradient of a legal page (html and body are a screen high) was repeated every screen height - a
+        seam across the card of «Правила», «Конфиденциальность» and «Условия»; now it is painted once, the dark colour below."""
+        self.assertIn('body.legal{ background-repeat: no-repeat; background-color: #020617; }', self.css)
+        self.assertIn('radial-gradient(900px 420px at 20% -10%, #0f172a, #020617)', self.css, 'the same colours as before')
