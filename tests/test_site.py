@@ -504,8 +504,8 @@ class AcademyRulesTests(unittest.TestCase):
 
     def test_the_rules_say_the_terms_the_academy_works_by(self):
         expected = {'en': ('6 hours', 'an hour before', '7 calendar days', '5 business days', '25%', '5 minutes', '24 hours'),
-                    'uk': ('6 годин', 'за годину', '7 календарних днів', '5 робочих днів', '25 %', '5 хвилин', '24 години'),
-                    'ru': ('6 часов', 'за час', '7 календарных дней', '5 рабочих дней', '25 %', '5 минут', '24 часа')}
+                    'uk': ('6 годин', 'за годину', '7 календарних днів', '5 робочих днів', '25\u00a0%', '5 хвилин', '24 години'),
+                    'ru': ('6 часов', 'за час', '7 календарных дней', '5 рабочих дней', '25\u00a0%', '5 минут', '24 часа')}
         for language, parts in expected.items():
             page = self.html('/rules', language)
             with self.subTest(language=language):
@@ -770,6 +770,34 @@ class PhoneLayoutTests(unittest.TestCase):
         for rule in ('.review-card', '.level__code'):
             self.assertNotIn(rule, touch)
         self.assertNotIn('animation:', touch, 'transitions on transform and opacity only - smooth on a phone')
+
+    @staticmethod
+    def page(path, language):
+        client = main.app.test_client()
+        client.set_cookie(main.LANGUAGE_COOKIE, language)
+        return client.get(path).get_data(as_text=True)
+
+    def test_a_number_and_its_percent_never_part(self):
+        """В-60 А (owner, 2026-11-02): «75 %» broke between the number and the sign on phones (uk at 344-360 px and more).
+        Where a language puts a space before «%», it is the non-breaking one (U+00A0); English writes «25%» with none."""
+        import re
+        for language, texts in main.TRANSLATIONS.items():
+            found = re.findall(r'\d(\s?)%', json.dumps(texts, ensure_ascii=False))
+            with self.subTest(language=language):
+                self.assertTrue(found, 'the rules name the discounts in per cent')
+                self.assertEqual(set(found), {''} if language == 'en' else {'\u00a0'})
+        self.assertIn('25\u00a0%', self.page('/rules', 'uk'))
+
+    def test_the_items_of_a_legal_list_stand_apart(self):
+        """В-59 А (owner, 2026-11-02): the items of a list on «Правила», «Конфиденциальность» and «Условия» ran together on a
+        phone; a gap between them now - a rule of the legal pages only, the main page has none of it."""
+        self.assertIn('.legal li + li{ margin-top: 8px; }', self.css)
+        for route in ('/rules', '/privacy', '/terms'):
+            page = self.page(route, 'ru')
+            with self.subTest(route=route):
+                self.assertIn('<body class="legal">', page)
+                self.assertGreaterEqual(page.count('<li data-i18n='), 2)
+        self.assertNotIn('class="legal', self.page('/', 'ru'), 'the main page is not a legal page')
 
     def test_a_legal_page_paints_its_background_once(self):
         """v1.0.12, A6: the gradient of a legal page (html and body are a screen high) was repeated every screen height - a

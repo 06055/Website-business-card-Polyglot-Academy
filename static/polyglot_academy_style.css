@@ -883,6 +883,9 @@ body.legal{ padding: 24px 16px 56px; min-height: 100%; }
 /* v1.0.12, A6: the background of a legal page is painted once and the same dark colour goes on below it - the gradient
    was repeated every screen height, a seam across the card on every long page (phones and computers alike). */
 body.legal{ background-repeat: no-repeat; background-color: #020617; }
+/* v1.0.12, В-59 А (owner, 2026-11-02): the items of a list on a legal page stand apart - on a phone they ran together into
+   one block («Правила», section 6; «Конфиденциальность» and «Условия» have lists of the same kind). */
+.legal li + li{ margin-top: 8px; }
 @media (max-width: 599px){
     .legal__box{ padding: 22px 18px; }
     .legal h1{ font-size: 26px; }
