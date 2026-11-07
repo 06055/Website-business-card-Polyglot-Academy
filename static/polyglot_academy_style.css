@@ -344,6 +344,10 @@ section{
     padding: 4px 10px;
     border-radius: 999px;
     white-space:nowrap;
+    /* Д-1 А (owner, 2026-11-07): in a row of .list (flex) the badge keeps its own height and stands in the middle of the row
+       when the text beside it takes 2-3 lines on a phone; it never shrinks. */
+    align-self:center;
+    flex-shrink:0;
 }
 
 footer{

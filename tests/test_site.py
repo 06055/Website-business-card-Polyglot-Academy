@@ -132,6 +132,27 @@ class BrandAssetsTests(unittest.TestCase):
                 width, height = struct.unpack('>II', png[16:24])
                 self.assertEqual(f'{width}x{height}', icon['sizes'])
 
+    def test_the_site_offers_no_install(self):
+        """Д-2 А (owner, 2026-11-07): the site is a page, not an app - no «Установить приложение»: the manifest opens it in the
+        browser (display «browser»; it was «standalone»), no service worker, no install prompt, no «web app capable» marks.
+        The icons stay as they were."""
+        manifest = json.loads(self.fetch('/static/icons/site.webmanifest')[1])
+        self.assertEqual(manifest['display'], 'browser')
+        self.assertNotIn('display_override', manifest)
+        self.assertEqual(len(manifest['icons']), 2)
+        sources = [path for folder in ('templates', 'static') for path in (ROOT / folder).rglob('*')
+                   if path.suffix in ('.html', '.js', '.webmanifest')]
+        self.assertTrue(sources)
+        for path in sources:
+            text = path.read_text(encoding='utf-8')
+            for word in ('serviceWorker', 'beforeinstallprompt', 'apple-mobile-web-app-capable', 'mobile-web-app-capable',
+                         'related_applications'):
+                with self.subTest(path=path.name, word=word):
+                    self.assertNotIn(word, text)
+        for page in ('/', '/rules', '/privacy', '/terms'):
+            with self.subTest(page=page):
+                self.assertNotIn('serviceWorker', self.fetch(page)[1].decode('utf-8'))
+
     def test_the_root_favicon_is_the_same_icon(self):
         """Browsers and crawlers ask for /favicon.ico whatever the <link> says: never a 404."""
         response, body = self.fetch('/favicon.ico')
@@ -776,6 +797,20 @@ class PhoneLayoutTests(unittest.TestCase):
         client = main.app.test_client()
         client.set_cookie(main.LANGUAGE_COOKIE, language)
         return client.get(path).get_data(as_text=True)
+
+    def test_a_badge_keeps_its_own_size_in_a_row_of_a_list(self):
+        """Д-1 А (owner, 2026-11-07): on a phone the badge «В любое время» (main page, card «Telegram-канал») grew to the height
+        of its row - .list li is a flex row, and a flex item stretches to it when the text beside it takes 2-3 lines. The badge
+        now keeps its own height, stands in the middle of the row and never shrinks; nothing else of the rule changed.
+        Checked in Chromium at 320, 360, 390, 412, 430, 1280 and 1920 px in ru/uk/en: outside the badges 0 pixels changed."""
+        start = self.css.index('.badge{')
+        badge = self.css[start:self.css.index('}', start)]
+        self.assertIn('align-self:center;', badge)
+        self.assertIn('flex-shrink:0;', badge)
+        self.assertIn('white-space:nowrap;', badge)
+        row = self.css[self.css.index('.list li{'):]
+        self.assertIn('display:flex; justify-content:space-between; gap:12px;', row[:row.index('}')], 'the row is as it was')
+        self.assertEqual(self.css.count('.badge{'), 1, 'one rule for the badges')
 
     def test_a_number_and_its_percent_never_part(self):
         """В-60 А (owner, 2026-11-02): «75 %» broke between the number and the sign on phones (uk at 344-360 px and more).
